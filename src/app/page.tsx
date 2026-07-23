@@ -235,21 +235,17 @@ export default function Home() {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center p-8">
-              <div className="text-center max-w-md">
+              <div className="text-center max-w-sm">
                 <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">How it works</h2>
-                <div className="text-sm text-gray-500 space-y-2 text-left">
-                  <p><span className="font-medium text-gray-700">1.</span> Upload your Excel file(s)</p>
-                  <p><span className="font-medium text-gray-700">2.</span> Pick which column has the values you want to look up</p>
-                  <p><span className="font-medium text-gray-700">3.</span> Choose the reference sheet and the column to match against</p>
-                  <p><span className="font-medium text-gray-700">4.</span> Select the columns to bring back</p>
-                  <p><span className="font-medium text-gray-700">5.</span> Download the result — your original data plus the new columns</p>
-                </div>
-                <p className="text-xs text-gray-400 mt-4">Works with .xlsx, .xls, and .csv files. All processing happens in your browser.</p>
+                <h2 className="text-base font-semibold text-gray-900 mb-2">Ready to match data</h2>
+                <p className="text-sm text-gray-500">
+                  Upload your Excel files in the left panel to start matching and looking up data between spreadsheets.
+                </p>
+                <p className="text-xs text-gray-400 mt-3">Supports .xlsx, .xls, and .csv files</p>
               </div>
             </div>
           )}
