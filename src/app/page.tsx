@@ -26,7 +26,7 @@ const DEFAULT_CONFIG: VlookupConfig = {
 };
 
 export default function Home() {
-  const [fileMode, setFileMode] = useState<FileMode>('dual');
+  const [fileMode, setFileMode] = useState<FileMode>('single');
   const [files, setFiles] = useState<(ExcelFile | null)[]>([null, null]);
   const [rawFiles, setRawFiles] = useState<(File | null)[]>([null, null]);
   const [config, setConfig] = useState<VlookupConfig>(DEFAULT_CONFIG);
