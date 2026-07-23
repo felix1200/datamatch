@@ -58,7 +58,7 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
   if (formulas.length === 0) {
     return (
       <div className="rounded-xl border border-border bg-muted/30 p-8 text-center">
-        <p className="text-sm text-muted-foreground">Complete the configuration above to generate VLOOKUP formulas</p>
+        <p className="text-sm text-muted-foreground">完成上方配置后将自动生成 VLOOKUP 公式</p>
       </div>
     );
   }
@@ -73,11 +73,11 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-4 text-sm">
           <span className="text-muted-foreground">
-            Generated <span className="font-semibold text-foreground">{totalFormulas}</span> formula{totalFormulas !== 1 ? 's' : ''}
+            共生成 <span className="font-semibold text-foreground">{totalFormulas}</span> 条公式
           </span>
           {matchResults && (
             <span className="text-muted-foreground">
-              Matched <span className="font-semibold text-emerald-600">{matchedCount}</span> / {totalCount}
+              匹配成功 <span className="font-semibold text-emerald-600">{matchedCount}</span> / {totalCount}
             </span>
           )}
         </div>
@@ -87,15 +87,15 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="formula" className="gap-1.5">
             <Code className="size-3.5" />
-            Formulas
+            公式文本
           </TabsTrigger>
           <TabsTrigger value="preview" className="gap-1.5">
             <Table2 className="size-3.5" />
-            Preview
+            匹配预览
           </TabsTrigger>
           <TabsTrigger value="download" className="gap-1.5">
             <FileDown className="size-3.5" />
-            Download
+            下载文件
           </TabsTrigger>
         </TabsList>
 
@@ -111,12 +111,12 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
               {copiedIndex === 'all' ? (
                 <>
                   <Check className="size-3.5 text-emerald-600" />
-                  Copied All
+                  已复制全部
                 </>
               ) : (
                 <>
                   <Copy className="size-3.5" />
-                  Copy All
+                  复制全部
                 </>
               )}
             </Button>
@@ -125,7 +125,7 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
             <div className="p-4 space-y-2 font-mono text-xs">
               {formulas.map((rowFormulas, i) => (
                 <div key={i} className="space-y-0.5">
-                  <span className="text-slate-500 text-[10px]">Row {i + 1}</span>
+                  <span className="text-slate-500 text-[10px]">第 {i + 1} 行</span>
                   {rowFormulas.map((formula, j) => {
                     const copyKey = `${i}-${j}`;
                     return (
@@ -142,7 +142,7 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
                         <button
                           onClick={() => handleCopy(formula, copyKey)}
                           className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-white/10 transition-all shrink-0"
-                          aria-label="Copy formula"
+                          aria-label="复制公式"
                         >
                           {copiedIndex === copyKey ? (
                             <Check className="size-3 text-emerald-400" />
@@ -172,7 +172,7 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
                       </th>
                       <th className="px-3 py-2 text-left font-medium text-foreground border-b border-r border-border whitespace-nowrap">
                         {lookupColumn}
-                        <span className="text-xs text-muted-foreground ml-1">(lookup value)</span>
+                        <span className="text-xs text-muted-foreground ml-1">(查找值)</span>
                       </th>
                       {returnColumns.map((col) => (
                         <th
@@ -180,7 +180,7 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
                           className="px-3 py-2 text-left font-medium text-emerald-700 border-b border-r border-border whitespace-nowrap last:border-r-0"
                         >
                           {col}
-                          <span className="text-xs text-emerald-600 ml-1">(result)</span>
+                          <span className="text-xs text-emerald-600 ml-1">(匹配结果)</span>
                         </th>
                       ))}
                     </tr>
@@ -217,7 +217,7 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
           )}
           {matchResults && matchResults.length > 200 && (
             <p className="text-xs text-muted-foreground text-center">
-              Showing first 200 of {matchResults.length} results
+              仅展示前 200 条匹配结果，共 {matchResults.length} 条
             </p>
           )}
         </TabsContent>
@@ -226,14 +226,14 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
         <TabsContent value="download" className="flex flex-col items-center justify-center py-8 gap-4">
           <Download className="size-12 text-muted-foreground" />
           <div className="text-center space-y-1">
-            <p className="text-sm font-medium text-foreground">Export Results to Excel</p>
+            <p className="text-sm font-medium text-foreground">导出匹配结果到 Excel</p>
             <p className="text-xs text-muted-foreground">
-              Your source data will be exported with {returnColumns.length} additional column{returnColumns.length !== 1 ? 's' : ''} containing the matched values
+              将在源文件数据基础上新增 {returnColumns.length} 列匹配结果
             </p>
           </div>
           <Button onClick={handleDownload} className="gap-2 bg-emerald-600 hover:bg-emerald-700">
             <Download className="size-4" />
-            Download Excel File
+            下载 Excel 文件
           </Button>
         </TabsContent>
       </Tabs>

@@ -8,12 +8,16 @@ import { VlookupConfigPanel, type VlookupConfig } from '@/components/vlookup-con
 import { OutputPanel } from '@/components/output-panel';
 import { parseExcelFile, type ExcelFile } from '@/lib/excel-utils';
 import { generateVlookupFormulas } from '@/lib/vlookup-engine';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+
+type FileMode = 'single' | 'dual';
 
 const DEFAULT_CONFIG: VlookupConfig = {
   sourceFileIndex: 0,
   sourceSheetName: '',
   lookupColumn: '',
-  targetFileIndex: 1,
+  targetFileIndex: 0,
   targetSheetName: '',
   lookupRangeStartCol: '',
   lookupRangeEndCol: '',
@@ -22,11 +26,36 @@ const DEFAULT_CONFIG: VlookupConfig = {
 };
 
 export default function Home() {
+  const [fileMode, setFileMode] = useState<FileMode>('dual');
   const [files, setFiles] = useState<(ExcelFile | null)[]>([null, null]);
   const [rawFiles, setRawFiles] = useState<(File | null)[]>([null, null]);
   const [config, setConfig] = useState<VlookupConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleFileModeChange = useCallback((mode: FileMode) => {
+    setFileMode(mode);
+    // Reset file 2 when switching to single mode
+    if (mode === 'single') {
+      setRawFiles((prev) => [prev[0], null]);
+      setFiles((prev) => [prev[0], null]);
+      setConfig((prev) => ({
+        ...prev,
+        sourceFileIndex: 0,
+        targetFileIndex: 0,
+        targetSheetName: '',
+        lookupRangeStartCol: '',
+        lookupRangeEndCol: '',
+        returnColumns: [],
+      }));
+    } else {
+      setConfig((prev) => ({
+        ...prev,
+        sourceFileIndex: 0,
+        targetFileIndex: 1,
+      }));
+    }
+  }, []);
 
   const handleFileChange = useCallback(async (index: number, file: File | null) => {
     setError(null);
@@ -48,12 +77,15 @@ export default function Home() {
       newFiles[index] = parsed;
       setFiles(newFiles);
 
-      // Auto-set sheet names
       setConfig((prev) => {
         const updated = { ...prev };
         if (index === 0) {
           updated.sourceFileIndex = 0;
           updated.sourceSheetName = parsed.activeSheet;
+          // In single mode, also set target to same file
+          if (fileMode === 'single') {
+            updated.targetFileIndex = 0;
+          }
         } else {
           updated.targetFileIndex = 1;
           updated.targetSheetName = parsed.activeSheet;
@@ -61,11 +93,11 @@ export default function Home() {
         return updated;
       });
     } catch {
-      setError(`Failed to parse file: ${file.name}. Please check the file format and try again.`);
+      setError(`文件解析失败: ${file.name}，请确认文件格式正确`);
     } finally {
       setLoading(false);
     }
-  }, [files, rawFiles]);
+  }, [files, rawFiles, fileMode]);
 
   const handleSheetChange = useCallback((index: number, sheetName: string) => {
     const newFiles = [...files];
@@ -73,7 +105,6 @@ export default function Home() {
       newFiles[index] = { ...newFiles[index]!, activeSheet: sheetName };
       setFiles(newFiles);
     }
-    // Also update config sheet name
     setConfig((prev) => {
       if (index === 0) {
         return { ...prev, sourceSheetName: sheetName, lookupColumn: '' };
@@ -136,8 +167,8 @@ export default function Home() {
             <FileSpreadsheet className="size-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-foreground tracking-tight">VLOOKUP Formula Builder</h1>
-            <p className="text-xs text-muted-foreground">Build VLOOKUP formulas visually — no Excel expertise needed</p>
+            <h1 className="text-lg font-bold text-foreground tracking-tight">VLOOKUP 公式助手</h1>
+            <p className="text-xs text-muted-foreground">可视化配置，批量生成 Excel VLOOKUP 公式</p>
           </div>
         </div>
       </header>
@@ -154,25 +185,57 @@ export default function Home() {
         <section className="space-y-4">
           <StepHeader
             step={1}
-            title="Upload Your Excel Files"
-            desc="Upload up to 2 files — one with the data you want to look up, and one with the reference table to match against."
+            title="上传 Excel 文件"
+            desc="选择使用一个文件（不同工作表）或两个文件来进行 VLOOKUP 匹配"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* File mode toggle */}
+          <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
+            <span className="text-sm text-muted-foreground">文件模式：</span>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="single-mode" className="text-sm cursor-pointer">
+                单文件
+              </Label>
+              <Switch
+                id="file-mode"
+                checked={fileMode === 'dual'}
+                onCheckedChange={(checked) => handleFileModeChange(checked ? 'dual' : 'single')}
+              />
+              <Label htmlFor="dual-mode" className="text-sm cursor-pointer">
+                双文件
+              </Label>
+            </div>
+            <span className="text-xs text-muted-foreground ml-2">
+              {fileMode === 'single'
+                ? '使用同一个文件的不同工作表进行匹配'
+                : '使用两个不同文件进行匹配'}
+            </span>
+          </div>
+
+          {fileMode === 'single' ? (
             <FileUpload
-              label="File 1 — Source data (contains lookup values)"
+              label="上传文件（源数据和查找表在同一个文件的不同工作表中）"
               file={rawFiles[0]}
               onFileChange={(f) => handleFileChange(0, f)}
             />
-            <FileUpload
-              label="File 2 — Reference table (contains data to match)"
-              file={rawFiles[1]}
-              onFileChange={(f) => handleFileChange(1, f)}
-            />
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FileUpload
+                label="文件 1（源文件 — 查找值所在）"
+                file={rawFiles[0]}
+                onFileChange={(f) => handleFileChange(0, f)}
+              />
+              <FileUpload
+                label="文件 2（目标文件 — 查找范围所在）"
+                file={rawFiles[1]}
+                onFileChange={(f) => handleFileChange(1, f)}
+              />
+            </div>
+          )}
           {loading && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <div className="size-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-              Parsing file...
+              正在解析文件...
             </div>
           )}
         </section>
@@ -182,14 +245,14 @@ export default function Home() {
           <section className="space-y-4">
             <StepHeader
               step={2}
-              title="Preview Your Data"
-              desc="Review the contents of your uploaded files. Switch between sheets if needed."
+              title="数据预览"
+              desc="确认数据内容，可切换工作表"
             />
             <div className="grid grid-cols-1 gap-6">
               {files.map((file, index) =>
                 file ? (
                   <DataPreview
-                    key={file.id}
+                    key={`${file.id}-${index}`}
                     data={file.sheets.find((s) => s.name === file.activeSheet) ?? null}
                     sheetName={file.activeSheet}
                     sheets={file.sheets}
@@ -208,8 +271,8 @@ export default function Home() {
           <section className="space-y-4">
             <StepHeader
               step={3}
-              title="Configure Your VLOOKUP"
-              desc="Select which columns to use for matching and what data to return. You can return multiple columns at once."
+              title="配置 VLOOKUP 参数"
+              desc="通过下拉框选择查找值列、查找范围、返回列（支持多列）和匹配方式"
             />
             <div className="rounded-xl border border-border bg-card p-6">
               <VlookupConfigPanel
@@ -220,6 +283,7 @@ export default function Home() {
                   targetFileIndex: Math.min(config.targetFileIndex, uploadedFiles.length - 1),
                 }}
                 onConfigChange={setConfig}
+                fileMode={fileMode}
               />
             </div>
           </section>
@@ -230,8 +294,8 @@ export default function Home() {
           <section className="space-y-4">
             <StepHeader
               step={4}
-              title="Your Results"
-              desc="Copy formulas, preview matched data, or download everything as an Excel file."
+              title="输出结果"
+              desc="复制公式、预览匹配结果或下载 Excel 文件"
             />
             <div className="rounded-xl border border-border bg-card p-6">
               <OutputPanel
@@ -252,10 +316,10 @@ export default function Home() {
             <div className="size-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4">
               <Sparkles className="size-8 text-emerald-600" />
             </div>
-            <h2 className="text-lg font-semibold text-foreground mb-2">Get Started</h2>
-            <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
-              Upload your Excel files above, then use the visual controls to configure your VLOOKUP.
-              We&apos;ll generate the formulas for you — no need to memorize syntax or cell references.
+            <h2 className="text-lg font-semibold text-foreground mb-2">开始使用</h2>
+            <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
+              上传 Excel 文件后，通过可视化界面配置 VLOOKUP 参数，
+              即可批量生成公式、预览匹配结果或导出 Excel 文件
             </p>
           </div>
         )}
@@ -264,7 +328,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border mt-12">
         <div className="mx-auto max-w-6xl px-4 py-4 text-center text-xs text-muted-foreground">
-          VLOOKUP Formula Builder — All processing happens in your browser. Your files never leave your device.
+          VLOOKUP 公式助手 — 纯前端处理，文件数据不会上传至服务器
         </div>
       </footer>
     </div>

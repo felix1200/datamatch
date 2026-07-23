@@ -2,33 +2,33 @@
 
 ## Design Tokens
 
-### Colors
-- Primary: Excel Green `#1D6F42` — evokes spreadsheets and data processing
-- Accent: Light Green `#E8F5E9` — for highlights and selected states
-- Background: White `#FFFFFF` + Off-White `#F8FAFB` — clean data tool atmosphere
-- Text: Dark Gray `#1A1A2E` primary, `#6B7280` secondary
-- Border: `#E5E7EB` — visually lightweight
+### 色彩
+- 主色：Excel 绿 `#1D6F42` — 唤起电子表格与数据处理的联想
+- 强调色：浅绿 `#E8F5E9` — 用于高亮和选中状态
+- 背景：白色 `#FFFFFF` + 米白 `#F8FAFB` — 干净的数据工具氛围
+- 文字：深灰 `#1A1A2E` 主文字，`#6B7280` 辅助文字
+- 边框：`#E5E7EB` — 视觉上轻量
 
-### Typography
-- Data display: Monospace `JetBrains Mono` (Google Fonts) for number alignment
-- UI text: System default font stack
+### 字体
+- 数据展示：等宽字体 `JetBrains Mono`（Google Fonts）用于数字对齐
+- UI 文字：系统默认字体栈
 
-### Border Radius
-- Cards: `12px`
-- Buttons/Inputs: `8px`
-- Table cells: `4px`
+### 圆角
+- 卡片：`12px`
+- 按钮/输入框：`8px`
+- 表格单元格：`4px`
 
-## Layout & Responsive
-- Max width `1200px` centered
-- Step-based layout: Upload → Preview → Configure → Output, clear vertical flow
-- Data preview table: horizontal scroll, fixed first column
+## 布局与响应式
+- 最大宽度 `1200px` 居中
+- 步骤式布局：上传 → 预览 → 配置 → 输出，清晰的纵向流程
+- 数据预览表格：横向滚动，固定首列
 
-## Interaction & States
-- Drag & drop zone: dashed border + hover highlight
-- Formula output: code block style, one-click copy with feedback animation
-- Match results: green highlight for success, red for unmatched
+## 交互与状态
+- 拖拽上传区域：虚线边框 + 悬停高亮
+- 公式输出：代码块样式，一键复制带反馈动画
+- 匹配结果：成功绿色高亮，未匹配红色标记
 
-## Design Don'ts
-- No gradients or complex shadows
-- No dark mode (data tools work best in light theme)
-- Avoid excessive animations that distract from data reading
+## 设计禁忌
+- 不使用渐变或复杂阴影
+- 不使用暗色模式（数据工具在浅色主题下效果最佳）
+- 避免过多干扰数据阅读的动画

@@ -30,7 +30,7 @@ export function DataPreview({ data, sheetName, sheets, onSheetChange, label, col
   if (!data) {
     return (
       <div className="rounded-xl border border-border bg-muted/30 p-8 text-center">
-        <p className="text-sm text-muted-foreground">Upload a file to preview data here</p>
+        <p className="text-sm text-muted-foreground">请先上传文件以预览数据</p>
       </div>
     );
   }
@@ -41,13 +41,13 @@ export function DataPreview({ data, sheetName, sheets, onSheetChange, label, col
         <div className="flex items-center gap-2">
           <span className={`text-sm font-medium ${colorClass}`}>{label}</span>
           <span className="text-xs text-muted-foreground">
-            {data.rows.length} rows x {data.headers.length} columns
+            {data.rows.length} 行 x {data.headers.length} 列
           </span>
         </div>
         {sheets.length > 1 && (
           <Select value={sheetName} onValueChange={onSheetChange}>
             <SelectTrigger size="sm" className="w-44">
-              <SelectValue placeholder="Select sheet" />
+              <SelectValue placeholder="选择工作表" />
             </SelectTrigger>
             <SelectContent>
               {sheets.map((s) => (
@@ -99,7 +99,7 @@ export function DataPreview({ data, sheetName, sheets, onSheetChange, label, col
       </div>
       {data.rows.length > MAX_PREVIEW_ROWS && (
         <p className="text-xs text-muted-foreground text-center">
-          Showing first {MAX_PREVIEW_ROWS} of {data.rows.length} rows
+          仅展示前 {MAX_PREVIEW_ROWS} 行，共 {data.rows.length} 行
         </p>
       )}
     </div>

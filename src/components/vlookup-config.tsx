@@ -29,9 +29,10 @@ interface VlookupConfigPanelProps {
   files: { fileName: string; sheets: SheetData[]; activeSheet: string }[];
   config: VlookupConfig;
   onConfigChange: (config: VlookupConfig) => void;
+  fileMode: 'single' | 'dual';
 }
 
-export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupConfigPanelProps) {
+export function VlookupConfigPanel({ files, config, onConfigChange, fileMode }: VlookupConfigPanelProps) {
   const sourceFile = files[config.sourceFileIndex];
   const targetFile = files[config.targetFileIndex];
   const sourceSheet = sourceFile?.sheets.find((s) => s.name === config.sourceSheetName);
@@ -57,52 +58,54 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Settings2 className="size-5 text-emerald-600" />
-        <h3 className="text-base font-semibold text-foreground">VLOOKUP Configuration</h3>
+        <h3 className="text-base font-semibold text-foreground">VLOOKUP 参数配置</h3>
       </div>
 
       {/* Source section */}
       <div className="rounded-lg border border-border p-4 space-y-4 bg-slate-50/50">
         <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
           <span className="size-5 rounded-full bg-emerald-600 text-white text-[10px] flex items-center justify-center font-bold">S</span>
-          Source Data — Where your lookup values are
+          源数据 — 查找值所在的文件和工作表
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">File</Label>
-            <Select
-              value={String(config.sourceFileIndex)}
-              onValueChange={(v) => {
-                const idx = Number(v);
-                const file = files[idx];
-                update({
-                  sourceFileIndex: idx,
-                  sourceSheetName: file?.activeSheet ?? '',
-                  lookupColumn: '',
-                });
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select file" />
-              </SelectTrigger>
-              <SelectContent>
-                {files.map((f, i) => (
-                  <SelectItem key={i} value={String(i)}>
-                    {f.fileName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {fileMode === 'dual' && (
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">文件</Label>
+              <Select
+                value={String(config.sourceFileIndex)}
+                onValueChange={(v) => {
+                  const idx = Number(v);
+                  const file = files[idx];
+                  update({
+                    sourceFileIndex: idx,
+                    sourceSheetName: file?.activeSheet ?? '',
+                    lookupColumn: '',
+                  });
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="选择文件" />
+                </SelectTrigger>
+                <SelectContent>
+                  {files.map((f, i) => (
+                    <SelectItem key={i} value={String(i)}>
+                      {f.fileName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Sheet</Label>
+            <Label className="text-xs text-muted-foreground">工作表</Label>
             <Select
               value={config.sourceSheetName}
               onValueChange={(v) => update({ sourceSheetName: v, lookupColumn: '' })}
               disabled={!sourceFile}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={sourceFile ? 'Select sheet' : 'Select file first'} />
+                <SelectValue placeholder={sourceFile ? '选择工作表' : '请先选择文件'} />
               </SelectTrigger>
               <SelectContent>
                 {sourceFile?.sheets.map((s) => (
@@ -115,14 +118,14 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Lookup Column — The column with values to search for</Label>
+            <Label className="text-xs text-muted-foreground">查找值列 — 源数据中需要被查找的列</Label>
             <Select
               value={config.lookupColumn}
               onValueChange={(v) => update({ lookupColumn: v })}
               disabled={!sourceSheet}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={sourceSheet ? 'Select column' : 'Select sheet first'} />
+                <SelectValue placeholder={sourceSheet ? '选择列' : '请先选择工作表'} />
               </SelectTrigger>
               <SelectContent>
                 {sourceSheet?.headers.map((h) => (
@@ -140,40 +143,42 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
       <div className="rounded-lg border border-border p-4 space-y-4 bg-blue-50/30">
         <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
           <span className="size-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">T</span>
-          Lookup Table — Where to find matches and return values from
+          查找表 — 匹配数据和返回值所在的文件和工作表
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">File</Label>
-            <Select
-              value={String(config.targetFileIndex)}
-              onValueChange={(v) => {
-                const idx = Number(v);
-                const file = files[idx];
-                update({
-                  targetFileIndex: idx,
-                  targetSheetName: file?.activeSheet ?? '',
-                  lookupRangeStartCol: '',
-                  lookupRangeEndCol: '',
-                  returnColumns: [],
-                });
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select file" />
-              </SelectTrigger>
-              <SelectContent>
-                {files.map((f, i) => (
-                  <SelectItem key={i} value={String(i)}>
-                    {f.fileName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {fileMode === 'dual' && (
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">文件</Label>
+              <Select
+                value={String(config.targetFileIndex)}
+                onValueChange={(v) => {
+                  const idx = Number(v);
+                  const file = files[idx];
+                  update({
+                    targetFileIndex: idx,
+                    targetSheetName: file?.activeSheet ?? '',
+                    lookupRangeStartCol: '',
+                    lookupRangeEndCol: '',
+                    returnColumns: [],
+                  });
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="选择文件" />
+                </SelectTrigger>
+                <SelectContent>
+                  {files.map((f, i) => (
+                    <SelectItem key={i} value={String(i)}>
+                      {f.fileName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Sheet</Label>
+            <Label className="text-xs text-muted-foreground">工作表</Label>
             <Select
               value={config.targetSheetName}
               onValueChange={(v) =>
@@ -187,7 +192,7 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
               disabled={!targetFile}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={targetFile ? 'Select sheet' : 'Select file first'} />
+                <SelectValue placeholder={targetFile ? '选择工作表' : '请先选择文件'} />
               </SelectTrigger>
               <SelectContent>
                 {targetFile?.sheets.map((s) => (
@@ -200,14 +205,14 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Match Column — The column in the lookup table to match against</Label>
+            <Label className="text-xs text-muted-foreground">匹配列 — 查找表中用于匹配的列</Label>
             <Select
               value={config.lookupRangeStartCol}
               onValueChange={(v) => update({ lookupRangeStartCol: v })}
               disabled={!targetSheet}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={targetSheet ? 'Select column' : 'Select sheet first'} />
+                <SelectValue placeholder={targetSheet ? '选择列' : '请先选择工作表'} />
               </SelectTrigger>
               <SelectContent>
                 {targetSheet?.headers.map((h) => (
@@ -223,7 +228,7 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
         {/* Range end column */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Table Range End Column — Last column of the lookup table range</Label>
+            <Label className="text-xs text-muted-foreground">查找范围结束列 — 查找表的最后一列</Label>
             <Select
               value={config.lookupRangeEndCol}
               onValueChange={(v) => {
@@ -237,7 +242,7 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
               disabled={!targetSheet}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={targetSheet ? 'Select column' : 'Select sheet first'} />
+                <SelectValue placeholder={targetSheet ? '选择列' : '请先选择工作表'} />
               </SelectTrigger>
               <SelectContent>
                 {targetSheet?.headers.map((h) => (
@@ -254,7 +259,7 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
         {targetSheet && config.lookupRangeEndCol && (
           <div className="space-y-3">
             <Label className="text-xs text-muted-foreground">
-              Return Columns — Select one or more columns to return after a match is found
+              返回列 — 选择匹配后要返回的一个或多个列
             </Label>
             <div className="flex flex-wrap gap-2">
               {targetSheet.headers
@@ -284,7 +289,7 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
             </div>
             {config.returnColumns.length === 0 && (
               <p className="text-xs text-muted-foreground">
-                Select at least one column to return
+                请至少选择一个返回列
               </p>
             )}
           </div>
@@ -296,15 +301,15 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
           <AlertCircle className="size-4 text-amber-600 shrink-0 mt-0.5" />
           <div className="text-xs text-amber-800">
-            <strong>Note:</strong> Your source and lookup table are from the same sheet.
-            For best results, use different sheets or files to keep your data organized.
+            <strong>提示：</strong>源数据和查找表来自同一个工作表。
+            建议选择不同的工作表以获得更好的数据组织效果。
           </div>
         </div>
       )}
 
       {/* Match mode */}
       <div className="space-y-3">
-        <Label className="text-sm">Match Mode</Label>
+        <Label className="text-sm">匹配方式</Label>
         <RadioGroup
           value={config.matchMode}
           onValueChange={(v) => update({ matchMode: v as 'exact' | 'fuzzy' })}
@@ -313,13 +318,13 @@ export function VlookupConfigPanel({ files, config, onConfigChange }: VlookupCon
           <div className="flex items-center gap-2">
             <RadioGroupItem value="exact" id="exact" />
             <Label htmlFor="exact" className="font-normal cursor-pointer">
-              Exact Match <span className="text-xs text-muted-foreground">(FALSE) — Values must be identical</span>
+              精确匹配 <span className="text-xs text-muted-foreground">(FALSE) — 值必须完全一致</span>
             </Label>
           </div>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="fuzzy" id="fuzzy" />
             <Label htmlFor="fuzzy" className="font-normal cursor-pointer">
-              Approximate Match <span className="text-xs text-muted-foreground">(TRUE) — Closest match</span>
+              模糊匹配 <span className="text-xs text-muted-foreground">(TRUE) — 近似匹配</span>
             </Label>
           </div>
         </RadioGroup>
