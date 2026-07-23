@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Upload, FileSpreadsheet, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -13,10 +13,16 @@ interface FileUploadProps {
 
 export function FileUpload({ label, file, onFileChange, accept = '.xlsx,.xls,.csv' }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = useCallback(() => {
+    inputRef.current?.click();
+  }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
+      e.stopPropagation();
       setIsDragging(false);
       const droppedFile = e.dataTransfer.files[0];
       if (droppedFile && isValidFile(droppedFile, accept)) {
@@ -28,10 +34,13 @@ export function FileUpload({ label, file, onFileChange, accept = '.xlsx,.xls,.cs
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
   }, []);
 
-  const handleDragLeave = useCallback(() => {
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsDragging(false);
   }, []);
 
@@ -55,11 +64,12 @@ export function FileUpload({ label, file, onFileChange, accept = '.xlsx,.xls,.cs
       <label className="text-sm font-medium text-foreground">{label}</label>
       {!file ? (
         <div
+          onClick={handleClick}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           className={cn(
-            'flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 transition-colors cursor-pointer',
+            'relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 transition-colors cursor-pointer',
             isDragging
               ? 'border-emerald-500 bg-emerald-50'
               : 'border-border hover:border-emerald-400 hover:bg-muted/50'
@@ -73,11 +83,11 @@ export function FileUpload({ label, file, onFileChange, accept = '.xlsx,.xls,.cs
             <p className="text-xs text-muted-foreground mt-1">支持 .xlsx, .xls, .csv 格式</p>
           </div>
           <input
+            ref={inputRef}
             type="file"
             accept={accept}
             onChange={handleFileInput}
-            className="absolute inset-0 opacity-0 cursor-pointer"
-            style={{ position: 'relative' }}
+            className="hidden"
           />
         </div>
       ) : (
