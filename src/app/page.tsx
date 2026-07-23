@@ -140,7 +140,14 @@ export default function Home() {
         {/* Left: Upload + Preview */}
         <div className="w-[45%] flex flex-col border-r bg-white">
           {!hasFiles ? (
-            <div className="flex-1 flex items-center justify-center p-6">
+            <div className="flex-1 flex flex-col items-center justify-center p-6 gap-4">
+              <div className="text-center max-w-sm">
+                <h2 className="text-base font-semibold text-gray-900 mb-2">What does this tool do?</h2>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  If you have data in one spreadsheet and need to find matching information from another, this tool does it for you automatically. 
+                  Just upload your files, tell us which columns to match, and we'll fill in the results — no formulas required.
+                </p>
+              </div>
               <FileUploadArea
                 files={files}
                 onFilesAdded={handleFilesAdded}
