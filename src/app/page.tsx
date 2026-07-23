@@ -143,10 +143,31 @@ export default function Home() {
             <div className="flex-1 flex flex-col items-center justify-center p-6 gap-4">
               <div className="text-center max-w-sm">
                 <h2 className="text-base font-semibold text-gray-900 mb-2">What does this tool do?</h2>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed mb-4">
                   If you have data in one spreadsheet and need to find matching information from another, this tool does it for you automatically. 
                   Just upload your files, tell us which columns to match, and we'll fill in the results — no formulas required.
                 </p>
+                <div className="text-left bg-gray-50 rounded-lg p-3 border border-gray-100">
+                  <p className="text-xs font-medium text-gray-700 mb-2">How it works:</p>
+                  <ul className="text-xs text-gray-600 space-y-1">
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-emerald-500 font-medium">1.</span>
+                      <span>Upload your Excel files (or use one file with multiple sheets)</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-emerald-500 font-medium">2.</span>
+                      <span>Select which column has the values you want to look up</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-emerald-500 font-medium">3.</span>
+                      <span>Choose the reference sheet and the column to match against</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-emerald-500 font-medium">4.</span>
+                      <span>Download the result with matched data added as new columns</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
               <FileUploadArea
                 files={files}
