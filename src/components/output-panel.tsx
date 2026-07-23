@@ -44,30 +44,30 @@ export function OutputPanel({ formulas, sourceSheet, sourceFileName, targetSheet
   const handleDownload = useCallback(() => {
     if (!sourceSheet || !matchResults) return;
 
-    // Build result column names
     const resultColNames = returnColumns.map((col) => `${col} (VLOOKUP)`);
-
-    // Full header list: all original columns first, then VLOOKUP result columns
     const allHeaders = [...sourceSheet.headers, ...resultColNames];
 
-    // Build export data: every original column preserved, plus new result columns appended
-    const exportData = sourceSheet.rows.map((row, i) => {
+    // Build as 2D array (array of arrays) — most reliable way to preserve every column
+    const aoa: (string | number | boolean | null)[][] = [];
+    // Header row
+    aoa.push(allHeaders);
+    // Data rows: every original column preserved in order, then VLOOKUP results appended
+    sourceSheet.rows.forEach((row, i) => {
       const result = matchResults[i];
-      const out: Record<string, string | number | boolean | null> = {};
-      // Preserve ALL original columns in their original order
+      const outRow: (string | number | boolean | null)[] = [];
+      // All original columns in their original order
       sourceSheet.headers.forEach((h) => {
-        out[h] = row[h] ?? null;
+        outRow.push(row[h] ?? null);
       });
-      // Append VLOOKUP result columns
-      resultColNames.forEach((colName, j) => {
-        out[colName] = result?.returnValues[j] ?? '#N/A';
+      // VLOOKUP result columns
+      resultColNames.forEach((_, j) => {
+        outRow.push(result?.returnValues[j] ?? '#N/A');
       });
-      return out;
+      aoa.push(outRow);
     });
 
-    // Derive output file name from source file name
     const baseName = sourceFileName.replace(/\.[^.]+$/, '');
-    generateExcelFile(exportData, `${baseName}_VLOOKUP结果.xlsx`, allHeaders);
+    generateExcelFile(aoa, `${baseName}_VLOOKUP结果.xlsx`);
   }, [sourceSheet, sourceFileName, matchResults, returnColumns]);
 
   if (formulas.length === 0) {

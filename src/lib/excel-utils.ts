@@ -71,14 +71,11 @@ export function parseExcelFile(file: File): Promise<ExcelFile> {
 }
 
 export function generateExcelFile(
-  data: Record<string, string | number | boolean | null>[],
-  fileName: string,
-  headers?: string[]
+  data: (string | number | boolean | null)[][],
+  fileName: string
 ): void {
-  // Explicitly pass headers to ensure ALL columns are included in order
-  const worksheet = headers
-    ? XLSX.utils.json_to_sheet(data, { header: headers })
-    : XLSX.utils.json_to_sheet(data);
+  // Use aoa_to_sheet (array of arrays) — most reliable way to preserve every column and row
+  const worksheet = XLSX.utils.aoa_to_sheet(data);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'VLOOKUP Result');
   XLSX.writeFile(workbook, fileName);
