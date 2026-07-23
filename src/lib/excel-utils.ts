@@ -11,6 +11,7 @@ export interface ExcelFile {
   fileName: string;
   sheets: SheetData[];
   activeSheet: string;
+  arrayBuffer: ArrayBuffer; // Store original file data for export
 }
 
 export function parseExcelFile(file: File): Promise<ExcelFile> {
@@ -60,6 +61,7 @@ export function parseExcelFile(file: File): Promise<ExcelFile> {
           fileName: file.name,
           sheets,
           activeSheet: workbook.SheetNames[0] || '',
+          arrayBuffer: data as ArrayBuffer,
         });
       } catch (err) {
         reject(err);
@@ -78,6 +80,58 @@ export function generateExcelFile(
   const worksheet = XLSX.utils.aoa_to_sheet(data);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'VLOOKUP Result');
+  XLSX.writeFile(workbook, fileName);
+}
+
+/**
+ * Export with all original sheets preserved, only appending result columns to the source sheet.
+ */
+export function exportWithOriginalSheets(
+  originalArrayBuffer: ArrayBuffer,
+  sourceSheetName: string,
+  resultColumns: { header: string; values: (string | number | boolean | null)[] }[],
+  fileName: string
+): void {
+  // Clone the original workbook
+  const workbook = XLSX.read(originalArrayBuffer, { type: 'array' });
+
+  // Find the source sheet
+  const worksheet = workbook.Sheets[sourceSheetName];
+  if (!worksheet) {
+    throw new Error(`Source sheet "${sourceSheetName}" not found`);
+  }
+
+  // Get current range
+  const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+  const startCol = range.e.c + 1; // Column after the last existing column
+
+  // Append each result column
+  resultColumns.forEach((col, colOffset) => {
+    const colIdx = startCol + colOffset;
+    // Add header
+    const headerCell = XLSX.utils.encode_cell({ r: 0, c: colIdx });
+    worksheet[headerCell] = { t: 's', v: col.header };
+
+    // Add values
+    col.values.forEach((value, rowIdx) => {
+      const cellRef = XLSX.utils.encode_cell({ r: rowIdx + 1, c: colIdx });
+      if (value === null || value === undefined) {
+        worksheet[cellRef] = { t: 's', v: '#N/A' };
+      } else if (typeof value === 'number') {
+        worksheet[cellRef] = { t: 'n', v: value };
+      } else if (typeof value === 'boolean') {
+        worksheet[cellRef] = { t: 'b', v: value };
+      } else {
+        worksheet[cellRef] = { t: 's', v: String(value) };
+      }
+    });
+  });
+
+  // Update the sheet range to include new columns
+  range.e.c = startCol + resultColumns.length - 1;
+  worksheet['!ref'] = XLSX.utils.encode_range(range);
+
+  // Write the modified workbook
   XLSX.writeFile(workbook, fileName);
 }
 

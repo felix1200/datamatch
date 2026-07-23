@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { Copy, Download, Check, Table2, Code, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { generateExcelFile } from '@/lib/excel-utils';
+import { exportWithOriginalSheets } from '@/lib/excel-utils';
 import { executeVlookup } from '@/lib/vlookup-engine';
 import type { SheetData } from '@/lib/excel-utils';
 import type { VlookupConfig } from './vlookup-config';
@@ -13,13 +13,14 @@ interface OutputPanelProps {
   formulas: string[][];
   sourceSheet: SheetData | null;
   sourceFileName: string;
+  sourceArrayBuffer: ArrayBuffer | null;
   targetSheet: SheetData | null;
   config: VlookupConfig;
   lookupColumn: string;
   returnColumns: string[];
 }
 
-export function OutputPanel({ formulas, sourceSheet, sourceFileName, targetSheet, config, lookupColumn, returnColumns }: OutputPanelProps) {
+export function OutputPanel({ formulas, sourceSheet, sourceFileName, sourceArrayBuffer, targetSheet, config, lookupColumn, returnColumns }: OutputPanelProps) {
   const [copiedIndex, setCopiedIndex] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('download');
 
@@ -42,33 +43,17 @@ export function OutputPanel({ formulas, sourceSheet, sourceFileName, targetSheet
   }, [formulas]);
 
   const handleDownload = useCallback(() => {
-    if (!sourceSheet || !matchResults) return;
+    if (!sourceSheet || !matchResults || !sourceArrayBuffer) return;
 
-    const resultColNames = returnColumns.map((col) => `${col} (VLOOKUP)`);
-    const allHeaders = [...sourceSheet.headers, ...resultColNames];
-
-    // Build as 2D array (array of arrays) — most reliable way to preserve every column
-    const aoa: (string | number | boolean | null)[][] = [];
-    // Header row
-    aoa.push(allHeaders);
-    // Data rows: every original column preserved in order, then VLOOKUP results appended
-    sourceSheet.rows.forEach((row, i) => {
-      const result = matchResults[i];
-      const outRow: (string | number | boolean | null)[] = [];
-      // All original columns in their original order
-      sourceSheet.headers.forEach((h) => {
-        outRow.push(row[h] ?? null);
-      });
-      // VLOOKUP result columns
-      resultColNames.forEach((_, j) => {
-        outRow.push(result?.returnValues[j] ?? '#N/A');
-      });
-      aoa.push(outRow);
-    });
+    // Build result columns with headers and values
+    const resultColumns = returnColumns.map((col, j) => ({
+      header: `${col} (VLOOKUP)`,
+      values: matchResults.map((result) => result?.returnValues[j] ?? '#N/A'),
+    }));
 
     const baseName = sourceFileName.replace(/\.[^.]+$/, '');
-    generateExcelFile(aoa, `${baseName}_VLOOKUP结果.xlsx`);
-  }, [sourceSheet, sourceFileName, matchResults, returnColumns]);
+    exportWithOriginalSheets(sourceArrayBuffer, sourceSheet.name, resultColumns, `${baseName}_VLOOKUP结果.xlsx`);
+  }, [sourceSheet, sourceFileName, sourceArrayBuffer, matchResults, returnColumns]);
 
   if (formulas.length === 0) {
     return (
