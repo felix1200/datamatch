@@ -20,7 +20,7 @@ interface OutputPanelProps {
 
 export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookupColumn, returnColumns }: OutputPanelProps) {
   const [copiedIndex, setCopiedIndex] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('formula');
+  const [activeTab, setActiveTab] = useState('download');
 
   const matchResults = useMemo(() => {
     if (!sourceSheet || !targetSheet || !lookupColumn || returnColumns.length === 0) return null;
@@ -85,22 +85,150 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="formula" className="gap-1.5">
-            <Code className="size-3.5" />
-            公式文本
+          <TabsTrigger value="download" className="gap-1.5">
+            <FileDown className="size-3.5" />
+            下载结果
           </TabsTrigger>
           <TabsTrigger value="preview" className="gap-1.5">
             <Table2 className="size-3.5" />
             匹配预览
           </TabsTrigger>
-          <TabsTrigger value="download" className="gap-1.5">
-            <FileDown className="size-3.5" />
-            下载文件
+          <TabsTrigger value="formula" className="gap-1.5">
+            <Code className="size-3.5" />
+            公式文本
           </TabsTrigger>
         </TabsList>
 
+        {/* Download Tab - Primary */}
+        <TabsContent value="download" className="space-y-4">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="size-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                <Download className="size-5 text-emerald-700" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">导出带匹配结果的 Excel 文件</p>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  会在你原始数据的基础上，自动新增 {returnColumns.length} 列匹配结果。
+                  下载后可以直接用 Excel 打开查看。
+                </p>
+              </div>
+            </div>
+
+            {matchResults && (
+              <div className="flex items-center gap-6 text-xs text-muted-foreground pl-13">
+                <span>
+                  数据行数：<span className="font-semibold text-foreground">{totalCount}</span> 行
+                </span>
+                <span>
+                  新增列数：<span className="font-semibold text-foreground">{returnColumns.length}</span> 列
+                </span>
+                <span>
+                  匹配成功：<span className="font-semibold text-emerald-600">{matchedCount}</span> / {totalCount}
+                </span>
+              </div>
+            )}
+
+            <div className="pl-13">
+              <Button onClick={handleDownload} className="gap-2 bg-emerald-600 hover:bg-emerald-700 h-10 px-6">
+                <Download className="size-4" />
+                下载 Excel 文件
+              </Button>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Preview Tab - Full merged data */}
+        <TabsContent value="preview" className="space-y-3">
+          {matchResults && sourceSheet && (
+            <>
+              <p className="text-xs text-muted-foreground">
+                展示你的数据与匹配结果的合并预览（最多显示前 200 行）
+              </p>
+              <div className="rounded-xl border border-border overflow-hidden">
+                <div className="overflow-x-auto max-h-96">
+                  <table className="w-full text-xs">
+                    <thead className="bg-muted/80 sticky top-0 z-10">
+                      <tr>
+                        <th className="px-3 py-2 text-left font-medium text-muted-foreground border-b border-r border-border w-10">
+                          #
+                        </th>
+                        {sourceSheet.headers.map((h) => (
+                          <th
+                            key={h}
+                            className={`px-3 py-2 text-left font-medium border-b border-r border-border whitespace-nowrap ${
+                              h === lookupColumn
+                                ? 'text-emerald-700 bg-emerald-50/50'
+                                : 'text-foreground'
+                            }`}
+                          >
+                            {h}
+                            {h === lookupColumn && (
+                              <span className="text-[10px] text-emerald-600 ml-1">(查找值)</span>
+                            )}
+                          </th>
+                        ))}
+                        {returnColumns.map((col) => (
+                          <th
+                            key={col}
+                            className="px-3 py-2 text-left font-medium text-blue-700 bg-blue-50/50 border-b border-r border-border whitespace-nowrap last:border-r-0"
+                          >
+                            {col}
+                            <span className="text-[10px] text-blue-600 ml-1">(匹配结果)</span>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {matchResults.slice(0, 200).map((result, i) => (
+                        <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-muted/20'}>
+                          <td className="px-3 py-1.5 text-muted-foreground border-r border-border font-mono">
+                            {i + 1}
+                          </td>
+                          {sourceSheet.headers.map((h) => (
+                            <td
+                              key={h}
+                              className={`px-3 py-1.5 border-r border-border whitespace-nowrap max-w-48 truncate ${
+                                h === lookupColumn ? 'text-emerald-700 bg-emerald-50/30 font-medium' : 'text-foreground'
+                              }`}
+                            >
+                              {result.lookupValue !== null && result.lookupValue !== undefined && h === lookupColumn
+                                ? String(result.lookupValue)
+                                : String(sourceSheet.rows[i][h] ?? '')}
+                            </td>
+                          ))}
+                          {result.returnValues.map((val, j) => (
+                            <td
+                              key={j}
+                              className={`px-3 py-1.5 border-r border-border whitespace-nowrap max-w-48 truncate font-mono last:border-r-0 ${
+                                result.matched
+                                  ? 'text-blue-700 bg-blue-50/50'
+                                  : 'text-red-600 bg-red-50/50'
+                              }`}
+                            >
+                              {result.matched ? String(val) : '#N/A'}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
+          {matchResults && matchResults.length > 200 && (
+            <p className="text-xs text-muted-foreground text-center">
+              仅展示前 200 行，共 {matchResults.length} 行数据
+            </p>
+          )}
+        </TabsContent>
+
         {/* Formula Tab */}
         <TabsContent value="formula" className="space-y-3">
+          <p className="text-xs text-muted-foreground">
+            以下是为每一行生成的 VLOOKUP 公式，可以复制到 Excel 中使用
+          </p>
           <div className="flex justify-end">
             <Button
               size="sm"
@@ -157,84 +285,6 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
               ))}
             </div>
           </div>
-        </TabsContent>
-
-        {/* Preview Tab */}
-        <TabsContent value="preview" className="space-y-3">
-          {matchResults && sourceSheet && (
-            <div className="rounded-xl border border-border overflow-hidden">
-              <div className="overflow-x-auto max-h-96">
-                <table className="w-full text-xs">
-                  <thead className="bg-muted/80 sticky top-0 z-10">
-                    <tr>
-                      <th className="px-3 py-2 text-left font-medium text-muted-foreground border-b border-r border-border w-10">
-                        #
-                      </th>
-                      <th className="px-3 py-2 text-left font-medium text-foreground border-b border-r border-border whitespace-nowrap">
-                        {lookupColumn}
-                        <span className="text-xs text-muted-foreground ml-1">(查找值)</span>
-                      </th>
-                      {returnColumns.map((col) => (
-                        <th
-                          key={col}
-                          className="px-3 py-2 text-left font-medium text-emerald-700 border-b border-r border-border whitespace-nowrap last:border-r-0"
-                        >
-                          {col}
-                          <span className="text-xs text-emerald-600 ml-1">(匹配结果)</span>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {matchResults.slice(0, 200).map((result, i) => (
-                      <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-muted/20'}>
-                        <td className="px-3 py-1.5 text-muted-foreground border-r border-border font-mono">
-                          {i + 1}
-                        </td>
-                        <td className="px-3 py-1.5 text-foreground border-r border-border whitespace-nowrap max-w-48 truncate">
-                          {result.lookupValue !== null && result.lookupValue !== undefined
-                            ? String(result.lookupValue)
-                            : ''}
-                        </td>
-                        {result.returnValues.map((val, j) => (
-                          <td
-                            key={j}
-                            className={`px-3 py-1.5 border-r border-border whitespace-nowrap max-w-48 truncate font-mono last:border-r-0 ${
-                              result.matched
-                                ? 'text-emerald-700 bg-emerald-50/50'
-                                : 'text-red-600 bg-red-50/50'
-                            }`}
-                          >
-                            {result.matched ? String(val) : '#N/A'}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-          {matchResults && matchResults.length > 200 && (
-            <p className="text-xs text-muted-foreground text-center">
-              仅展示前 200 条匹配结果，共 {matchResults.length} 条
-            </p>
-          )}
-        </TabsContent>
-
-        {/* Download Tab */}
-        <TabsContent value="download" className="flex flex-col items-center justify-center py-8 gap-4">
-          <Download className="size-12 text-muted-foreground" />
-          <div className="text-center space-y-1">
-            <p className="text-sm font-medium text-foreground">导出匹配结果到 Excel</p>
-            <p className="text-xs text-muted-foreground">
-              将在源文件数据基础上新增 {returnColumns.length} 列匹配结果
-            </p>
-          </div>
-          <Button onClick={handleDownload} className="gap-2 bg-emerald-600 hover:bg-emerald-700">
-            <Download className="size-4" />
-            下载 Excel 文件
-          </Button>
         </TabsContent>
       </Tabs>
     </div>

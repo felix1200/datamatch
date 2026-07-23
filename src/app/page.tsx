@@ -168,7 +168,7 @@ export default function Home() {
           </div>
           <div>
             <h1 className="text-lg font-bold text-foreground tracking-tight">VLOOKUP 公式助手</h1>
-            <p className="text-xs text-muted-foreground">可视化配置，批量生成 Excel VLOOKUP 公式</p>
+            <p className="text-xs text-muted-foreground">不用写公式，可视化操作就能批量匹配数据</p>
           </div>
         </div>
       </header>
@@ -186,12 +186,12 @@ export default function Home() {
           <StepHeader
             step={1}
             title="上传 Excel 文件"
-            desc="选择使用一个文件（不同工作表）或两个文件来进行 VLOOKUP 匹配"
+            desc={'上传你要处理的数据文件。选择「单文件」表示数据都在同一个 Excel 的不同工作表中；选择「双文件」表示数据分别在两个不同的文件中。'}
           />
 
           {/* File mode toggle */}
           <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
-            <span className="text-sm text-muted-foreground">文件模式：</span>
+            <span className="text-sm text-muted-foreground shrink-0">文件模式：</span>
             <div className="flex items-center gap-2">
               <Label htmlFor="single-mode" className="text-sm cursor-pointer">
                 单文件
@@ -207,29 +207,39 @@ export default function Home() {
             </div>
             <span className="text-xs text-muted-foreground ml-2">
               {fileMode === 'single'
-                ? '使用同一个文件的不同工作表进行匹配'
-                : '使用两个不同文件进行匹配'}
+                ? '所有数据在同一个 Excel 文件的不同工作表中'
+                : '数据分别在两个不同的 Excel 文件中'}
             </span>
           </div>
 
           {fileMode === 'single' ? (
             <FileUpload
-              label="上传文件（源数据和查找表在同一个文件的不同工作表中）"
+              label="上传 Excel 文件"
               file={rawFiles[0]}
               onFileChange={(f) => handleFileChange(0, f)}
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FileUpload
-                label="文件 1（源文件 — 查找值所在）"
-                file={rawFiles[0]}
-                onFileChange={(f) => handleFileChange(0, f)}
-              />
-              <FileUpload
-                label="文件 2（目标文件 — 查找范围所在）"
-                file={rawFiles[1]}
-                onFileChange={(f) => handleFileChange(1, f)}
-              />
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  上传包含你要处理的数据的文件。比如你有一份名单，想补充一些缺失的信息，就上传这份名单。
+                </p>
+                <FileUpload
+                  label="文件 1 — 你的数据"
+                  file={rawFiles[0]}
+                  onFileChange={(f) => handleFileChange(0, f)}
+                />
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  上传包含对照信息的文件。就像一本字典，你拿着关键词去这里查对应的答案。
+                </p>
+                <FileUpload
+                  label="文件 2 — 对照表"
+                  file={rawFiles[1]}
+                  onFileChange={(f) => handleFileChange(1, f)}
+                />
+              </div>
             </div>
           )}
           {loading && (
@@ -245,8 +255,8 @@ export default function Home() {
           <section className="space-y-4">
             <StepHeader
               step={2}
-              title="数据预览"
-              desc="确认数据内容，可切换工作表"
+              title="确认数据内容"
+              desc="检查上传的文件数据是否正确，可以切换工作表查看不同页的数据"
             />
             <div className="grid grid-cols-1 gap-6">
               {files.map((file, index) =>
@@ -271,8 +281,8 @@ export default function Home() {
           <section className="space-y-4">
             <StepHeader
               step={3}
-              title="配置 VLOOKUP 参数"
-              desc="通过下拉框选择查找值列、查找范围、返回列（支持多列）和匹配方式"
+              title="配置匹配规则"
+              desc="告诉系统：你的数据中哪一列是关键词，对照表中哪一列用来匹配，以及你想把哪些信息带回来"
             />
             <div className="rounded-xl border border-border bg-card p-6">
               <VlookupConfigPanel
@@ -294,8 +304,8 @@ export default function Home() {
           <section className="space-y-4">
             <StepHeader
               step={4}
-              title="输出结果"
-              desc="复制公式、预览匹配结果或下载 Excel 文件"
+              title="获取结果"
+              desc="下载带匹配结果的 Excel 文件（推荐）、预览匹配效果、或复制公式文本"
             />
             <div className="rounded-xl border border-border bg-card p-6">
               <OutputPanel
