@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { parseExcelFile, type ExcelFile, type SheetData } from '@/lib/excel-utils';
 import { generateFormulas, executeLookup, type VlookupConfig, type VlookupResult } from '@/lib/vlookup-engine';
 import { FileUploadArea } from '@/components/file-upload';
@@ -9,6 +9,11 @@ import { ConfigPanel } from '@/components/config-panel';
 import { ActionButtons } from '@/components/action-buttons';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertTriangle, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { canProcess, incrementUsage, getUsage, type UsageData } from '@/lib/subscription';
 
 const DEFAULT_CONFIG: VlookupConfig = {
   sourceFileIndex: 0,
@@ -27,6 +32,12 @@ export default function Home() {
   const [isSingleFile, setIsSingleFile] = useState(true);
   const [config, setConfig] = useState<VlookupConfig>(DEFAULT_CONFIG);
   const [activeTab, setActiveTab] = useState<'download' | 'preview' | 'formula'>('download');
+  const [usage, setUsage] = useState<UsageData>({ processesThisMonth: 0, lastResetDate: new Date().toISOString(), currentPlan: 'free' });
+  const [limitError, setLimitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUsage(getUsage());
+  }, []);
 
   const handleFilesAdded = useCallback((newFiles: File[]) => {
     Promise.all(newFiles.map(parseExcelFile)).then((parsed) => {
@@ -132,8 +143,41 @@ export default function Home() {
               {isSingleFile ? 'One file' : 'Two files'}
             </Label>
           </div>
+          <div className="h-6 w-px bg-gray-200" />
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">
+              {usage.currentPlan === 'free' 
+                ? `${usage.processesThisMonth}/3 free uses`
+                : `${usage.currentPlan.charAt(0).toUpperCase() + usage.currentPlan.slice(1)} plan`
+              }
+            </span>
+            <Link href="/pricing">
+              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
+                <Sparkles className="w-3 h-3" />
+                Upgrade
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
+
+      {/* Limit error alert */}
+      {limitError && (
+        <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center gap-3">
+          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+          <p className="text-sm text-amber-800 flex-1">{limitError}</p>
+          <Link href="/pricing">
+            <Button size="sm" className="h-7 text-xs bg-amber-600 hover:bg-amber-700">
+              Upgrade Now
+            </Button>
+          </Link>
+          <button onClick={() => setLimitError(null)} className="text-amber-600 hover:text-amber-800">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Main content - two column layout */}
       <main className="flex-1 flex gap-0 overflow-hidden">
@@ -229,6 +273,20 @@ export default function Home() {
                     sourceArrayBuffer={sourceArrayBuffer}
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
+                    onBeforeDownload={() => {
+                      const rowCount = sourceSheet?.rows.length || 0;
+                      const check = canProcess(rowCount, !isSingleFile);
+                      if (!check.allowed) {
+                        setLimitError(check.reason || null);
+                      } else {
+                        setLimitError(null);
+                      }
+                      return check;
+                    }}
+                    onAfterDownload={() => {
+                      const newUsage = incrementUsage();
+                      setUsage(newUsage);
+                    }}
                   />
                 </div>
               )}

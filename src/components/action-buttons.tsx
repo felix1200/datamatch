@@ -17,6 +17,8 @@ interface ActionButtonsProps {
   sourceArrayBuffer: ArrayBuffer | undefined;
   activeTab: 'download' | 'preview' | 'formula';
   onTabChange: (tab: 'download' | 'preview' | 'formula') => void;
+  onBeforeDownload?: () => { allowed: boolean; reason?: string };
+  onAfterDownload?: () => void;
 }
 
 export function ActionButtons({
@@ -28,6 +30,8 @@ export function ActionButtons({
   sourceArrayBuffer,
   activeTab,
   onTabChange,
+  onBeforeDownload,
+  onAfterDownload,
 }: ActionButtonsProps) {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
@@ -50,6 +54,16 @@ export function ActionButtons({
 
   const handleDownload = async () => {
     if (!sourceArrayBuffer) return;
+    
+    // Check limits before downloading
+    if (onBeforeDownload) {
+      const check = onBeforeDownload();
+      if (!check.allowed) {
+        alert(check.reason || 'Unable to process. Please upgrade your plan.');
+        return;
+      }
+    }
+    
     setDownloading(true);
     try {
       await downloadExcelWithResults(
@@ -60,6 +74,10 @@ export function ActionButtons({
         matchResults,
         sourceFileName
       );
+      // Increment usage after successful download
+      if (onAfterDownload) {
+        onAfterDownload();
+      }
     } finally {
       setDownloading(false);
     }
