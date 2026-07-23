@@ -106,3 +106,53 @@ function getColLetter(index: number): string {
   }
   return letter;
 }
+
+// Aliases for convenience
+export type VlookupResult = MatchResultRow;
+
+// Extended config used by the UI (includes file/sheet selection info)
+export interface VlookupConfig {
+  sourceFileIndex: number;
+  sourceSheetName: string;
+  lookupValueCol: string;
+  targetFileIndex: number;
+  targetSheetName: string;
+  lookupRangeStartCol: string;
+  lookupRangeEndCol: string;
+  returnColumns: string[];
+  matchMode: 'exact' | 'fuzzy';
+}
+
+export function generateFormulas(
+  sourceSheet: SheetData,
+  targetSheet: SheetData,
+  config: VlookupConfig
+): string[] {
+  const params: VlookupParams = {
+    lookupColumn: config.lookupValueCol,
+    lookupSheet: targetSheet,
+    lookupRangeStartCol: config.lookupRangeStartCol,
+    lookupRangeEndCol: config.lookupRangeEndCol,
+    returnColumns: config.returnColumns,
+    matchMode: config.matchMode,
+  };
+  const formulas: string[] = [];
+  sourceSheet.rows.forEach((_, i) => {
+    formulas.push(...generateVlookupFormulas(params, i));
+  });
+  return formulas;
+}
+
+export function executeLookup(
+  sourceSheet: SheetData,
+  targetSheet: SheetData,
+  config: VlookupConfig
+): MatchResultRow[] {
+  return executeVlookup(
+    sourceSheet.rows,
+    targetSheet,
+    config.lookupValueCol,
+    config.returnColumns,
+    config.matchMode
+  );
+}

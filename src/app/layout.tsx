@@ -3,13 +3,13 @@ import { Inspector } from 'react-dev-inspector';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'VLOOKUP 公式助手 — 可视化生成 Excel VLOOKUP 公式',
-  description: '上传 Excel 文件，通过可视化界面配置 VLOOKUP 参数，批量生成公式并导出结果。',
-  keywords: ['VLOOKUP', 'Excel', '公式生成', '数据匹配', '电子表格'],
+  title: 'DataMatch — Match & Look Up Data Between Excel Spreadsheets',
+  description: 'Easily match data between two Excel files or sheets. Find values, fill columns, and merge spreadsheets — no formulas needed. Free online tool.',
+  keywords: ['match data between spreadsheets', 'look up values in Excel', 'merge Excel files', 'find and fill data', 'Excel data lookup tool', 'match columns between sheets', 'VLOOKUP alternative', 'spreadsheet data matching'],
   openGraph: {
-    title: 'VLOOKUP 公式助手',
-    description: '可视化配置，批量生成 Excel VLOOKUP 公式。',
-    locale: 'zh_CN',
+    title: 'DataMatch — Match Data Between Spreadsheets',
+    description: 'Look up and match data across Excel sheets instantly. No formulas needed.',
+    locale: 'en_US',
     type: 'website',
   },
   robots: {
@@ -26,7 +26,7 @@ export default function RootLayout({
   const isDev = process.env.COZE_PROJECT_ENV === 'DEV';
 
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body className={`antialiased`}>
         {isDev && <Inspector />}
         {children}

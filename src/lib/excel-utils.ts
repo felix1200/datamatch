@@ -8,6 +8,7 @@ export interface SheetData {
 
 export interface ExcelFile {
   id: string;
+  name: string;
   fileName: string;
   sheets: SheetData[];
   activeSheet: string;
@@ -39,7 +40,7 @@ export function parseExcelFile(file: File): Promise<ExcelFile> {
           // Deduplicate header names (e.g. two columns both named "ID")
           const seen = new Map<string, number>();
           const headers = rawHeaders.map((h) => {
-            const displayName = h || '(空列名)';
+            const displayName = h || '(empty)';
             const count = seen.get(displayName) ?? 0;
             seen.set(displayName, count + 1);
             return count > 0 ? `${displayName}_${count + 1}` : displayName;
@@ -58,6 +59,7 @@ export function parseExcelFile(file: File): Promise<ExcelFile> {
         });
         resolve({
           id: crypto.randomUUID(),
+          name: file.name,
           fileName: file.name,
           sheets,
           activeSheet: workbook.SheetNames[0] || '',
@@ -143,4 +145,24 @@ export function getColumnLetter(index: number): string {
     n = Math.floor(n / 26) - 1;
   }
   return letter;
+}
+
+/**
+ * Download Excel with results appended to the source sheet, preserving all original sheets.
+ */
+export function downloadExcelWithResults(
+  originalArrayBuffer: ArrayBuffer,
+  sourceSheetName: string,
+  sourceSheet: SheetData,
+  returnColumns: string[],
+  matchResults: { matched: boolean; returnValues: (string | number | boolean | null)[] }[],
+  sourceFileName: string
+): void {
+  const resultColumns = returnColumns.map((col, j) => ({
+    header: `${col} (matched)`,
+    values: matchResults.map((r) => (r.matched ? (r.returnValues[j] ?? null) : null)),
+  }));
+
+  const baseName = sourceFileName.replace(/\.(xlsx|xls|csv)$/i, '');
+  exportWithOriginalSheets(originalArrayBuffer, sourceSheetName, resultColumns, `${baseName}_matched.xlsx`);
 }
