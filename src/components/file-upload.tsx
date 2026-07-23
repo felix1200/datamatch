@@ -68,9 +68,9 @@ export function FileUpload({ label, file, onFileChange, accept = '.xlsx,.xls,.cs
           <Upload className={cn('size-8', isDragging ? 'text-emerald-500' : 'text-muted-foreground')} />
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              拖拽文件到此处，或 <span className="text-emerald-600 font-medium">点击上传</span>
+              Drag & drop your file here, or <span className="text-emerald-600 font-medium">click to browse</span>
             </p>
-            <p className="text-xs text-muted-foreground mt-1">支持 .xlsx, .xls, .csv 格式</p>
+            <p className="text-xs text-muted-foreground mt-1">Supports .xlsx, .xls, and .csv files</p>
           </div>
           <input
             type="file"
@@ -90,6 +90,7 @@ export function FileUpload({ label, file, onFileChange, accept = '.xlsx,.xls,.cs
           <button
             onClick={handleRemove}
             className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+            aria-label="Remove file"
           >
             <X className="size-4" />
           </button>

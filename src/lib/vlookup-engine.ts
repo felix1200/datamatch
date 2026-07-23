@@ -5,52 +5,66 @@ export interface VlookupParams {
   lookupSheet: SheetData;
   lookupRangeStartCol: string;
   lookupRangeEndCol: string;
-  returnColumn: string;
+  returnColumns: string[];
   matchMode: 'exact' | 'fuzzy';
 }
 
-export function generateVlookupFormula(params: VlookupParams, rowIndex: number): string {
-  const { lookupColumn, lookupSheet, lookupRangeStartCol, lookupRangeEndCol, returnColumn, matchMode } = params;
+export function generateVlookupFormulas(
+  params: VlookupParams,
+  rowIndex: number
+): string[] {
+  const { lookupColumn, lookupSheet, lookupRangeStartCol, lookupRangeEndCol, returnColumns, matchMode } = params;
 
   const lookupHeaders = lookupSheet.headers;
   const lookupColIndex = lookupHeaders.indexOf(lookupColumn);
-  const returnColIndex = lookupHeaders.indexOf(returnColumn);
   const rangeStartIndex = lookupHeaders.indexOf(lookupRangeStartCol);
+  const rangeEndIndex = lookupHeaders.indexOf(lookupRangeEndCol);
 
-  if (lookupColIndex === -1 || returnColIndex === -1 || rangeStartIndex === -1) {
-    return '#ERROR: Invalid column selection';
+  if (lookupColIndex === -1 || rangeStartIndex === -1 || rangeEndIndex === -1) {
+    return returnColumns.map(() => '#ERROR: Invalid column selection');
   }
 
-  const colIndexNum = returnColIndex - rangeStartIndex + 1;
   const rangeLookup = matchMode === 'fuzzy' ? 'TRUE' : 'FALSE';
-
   const startRow = 2;
   const endRow = lookupSheet.rows.length + 1;
-
   const startColLetter = getColLetter(rangeStartIndex);
-  const endColLetter = getColLetter(lookupHeaders.indexOf(lookupRangeEndCol));
-
+  const endColLetter = getColLetter(rangeEndIndex);
   const tableArray = `${startColLetter}${startRow}:${endColLetter}${endRow}`;
   const lookupCellRef = `${getColLetter(lookupColIndex)}${rowIndex + 1}`;
 
-  return `=VLOOKUP(${lookupCellRef},${tableArray},${colIndexNum},${rangeLookup})`;
+  return returnColumns.map((returnCol) => {
+    const returnColIndex = lookupHeaders.indexOf(returnCol);
+    if (returnColIndex === -1) return '#ERROR: Invalid return column';
+    const colIndexNum = returnColIndex - rangeStartIndex + 1;
+    return `=VLOOKUP(${lookupCellRef},${tableArray},${colIndexNum},${rangeLookup})`;
+  });
+}
+
+export interface MatchResultRow {
+  lookupValue: string | number | boolean | null;
+  returnValues: (string | number | boolean | null)[];
+  matched: boolean;
 }
 
 export function executeVlookup(
   sourceData: Record<string, string | number | boolean | null>[],
   lookupSheet: SheetData,
   lookupColumn: string,
-  returnColumn: string,
+  returnColumns: string[],
   matchMode: 'exact' | 'fuzzy'
-): { value: string | number | boolean | null; matched: boolean }[] {
+): MatchResultRow[] {
   const lookupRows = lookupSheet.rows;
-  const results: { value: string | number | boolean | null; matched: boolean }[] = [];
+  const results: MatchResultRow[] = [];
 
   for (const sourceRow of sourceData) {
     const lookupValue = sourceRow[lookupColumn];
 
     if (lookupValue === null || lookupValue === undefined) {
-      results.push({ value: '#N/A', matched: false });
+      results.push({
+        lookupValue,
+        returnValues: returnColumns.map(() => '#N/A'),
+        matched: false,
+      });
       continue;
     }
 
@@ -66,9 +80,17 @@ export function executeVlookup(
     });
 
     if (matchRow) {
-      results.push({ value: matchRow[returnColumn] ?? '#N/A', matched: true });
+      results.push({
+        lookupValue,
+        returnValues: returnColumns.map((col) => matchRow[col] ?? '#N/A'),
+        matched: true,
+      });
     } else {
-      results.push({ value: '#N/A', matched: false });
+      results.push({
+        lookupValue,
+        returnValues: returnColumns.map(() => '#N/A'),
+        matched: false,
+      });
     }
   }
 

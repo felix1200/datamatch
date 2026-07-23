@@ -3,16 +3,16 @@ import { Inspector } from 'react-dev-inspector';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'VLOOKUP 公式助手',
-  description: '可视化配置 Excel VLOOKUP 公式，支持批量生成、匹配预览和文件导出',
-  keywords: ['VLOOKUP', 'Excel', '公式', '查找匹配', '电子表格'],
+  title: 'VLOOKUP Formula Builder',
+  description: 'Build Excel VLOOKUP formulas visually — upload files, configure parameters with dropdowns, and generate formulas in bulk.',
+  keywords: ['VLOOKUP', 'Excel', 'formula builder', 'lookup', 'data matching', 'spreadsheet'],
   // icons: {
   //   icon: '',
   // },
   openGraph: {
-    title: 'VLOOKUP 公式助手',
-    description: '可视化配置 Excel VLOOKUP 公式，批量生成、匹配预览、文件导出',
-    locale: 'zh_CN',
+    title: 'VLOOKUP Formula Builder',
+    description: 'Build Excel VLOOKUP formulas visually — no spreadsheet expertise required.',
+    locale: 'en_US',
     type: 'website',
   },
   robots: {

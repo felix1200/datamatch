@@ -7,15 +7,17 @@ import { DataPreview } from '@/components/data-preview';
 import { VlookupConfigPanel, type VlookupConfig } from '@/components/vlookup-config';
 import { OutputPanel } from '@/components/output-panel';
 import { parseExcelFile, type ExcelFile } from '@/lib/excel-utils';
-import { generateVlookupFormula } from '@/lib/vlookup-engine';
+import { generateVlookupFormulas } from '@/lib/vlookup-engine';
 
 const DEFAULT_CONFIG: VlookupConfig = {
   sourceFileIndex: 0,
+  sourceSheetName: '',
   lookupColumn: '',
   targetFileIndex: 1,
+  targetSheetName: '',
   lookupRangeStartCol: '',
   lookupRangeEndCol: '',
-  returnColumn: '',
+  returnColumns: [],
   matchMode: 'exact',
 };
 
@@ -46,14 +48,20 @@ export default function Home() {
       newFiles[index] = parsed;
       setFiles(newFiles);
 
-      // Auto-set default target file index if first file
-      if (index === 0 && newFiles[1]) {
-        setConfig((prev) => ({ ...prev, sourceFileIndex: 0, targetFileIndex: 1 }));
-      } else if (index === 1 && newFiles[0]) {
-        setConfig((prev) => ({ ...prev, sourceFileIndex: 0, targetFileIndex: 1 }));
-      }
+      // Auto-set sheet names
+      setConfig((prev) => {
+        const updated = { ...prev };
+        if (index === 0) {
+          updated.sourceFileIndex = 0;
+          updated.sourceSheetName = parsed.activeSheet;
+        } else {
+          updated.targetFileIndex = 1;
+          updated.targetSheetName = parsed.activeSheet;
+        }
+        return updated;
+      });
     } catch {
-      setError(`文件解析失败: ${file.name}，请确认文件格式正确`);
+      setError(`Failed to parse file: ${file.name}. Please check the file format and try again.`);
     } finally {
       setLoading(false);
     }
@@ -65,32 +73,47 @@ export default function Home() {
       newFiles[index] = { ...newFiles[index]!, activeSheet: sheetName };
       setFiles(newFiles);
     }
+    // Also update config sheet name
+    setConfig((prev) => {
+      if (index === 0) {
+        return { ...prev, sourceSheetName: sheetName, lookupColumn: '' };
+      } else {
+        return { ...prev, targetSheetName: sheetName, lookupRangeStartCol: '', lookupRangeEndCol: '', returnColumns: [] };
+      }
+    });
   }, [files]);
 
   const uploadedFiles = files.filter((f): f is ExcelFile => f !== null);
 
   const sourceSheet = useMemo(() => {
     const file = files[config.sourceFileIndex];
-    return file?.sheets.find((s) => s.name === file.activeSheet) ?? null;
-  }, [files, config.sourceFileIndex]);
+    return file?.sheets.find((s) => s.name === config.sourceSheetName) ?? null;
+  }, [files, config.sourceFileIndex, config.sourceSheetName]);
 
   const targetSheet = useMemo(() => {
     const file = files[config.targetFileIndex];
-    return file?.sheets.find((s) => s.name === file.activeSheet) ?? null;
-  }, [files, config.targetFileIndex]);
+    return file?.sheets.find((s) => s.name === config.targetSheetName) ?? null;
+  }, [files, config.targetFileIndex, config.targetSheetName]);
 
   const formulas = useMemo(() => {
-    if (!sourceSheet || !targetSheet || !config.lookupColumn || !config.returnColumn || !config.lookupRangeStartCol || !config.lookupRangeEndCol) {
+    if (
+      !sourceSheet ||
+      !targetSheet ||
+      !config.lookupColumn ||
+      config.returnColumns.length === 0 ||
+      !config.lookupRangeStartCol ||
+      !config.lookupRangeEndCol
+    ) {
       return [];
     }
     return sourceSheet.rows.map((_, i) =>
-      generateVlookupFormula(
+      generateVlookupFormulas(
         {
           lookupColumn: config.lookupColumn,
           lookupSheet: targetSheet,
           lookupRangeStartCol: config.lookupRangeStartCol,
           lookupRangeEndCol: config.lookupRangeEndCol,
-          returnColumn: config.returnColumn,
+          returnColumns: config.returnColumns,
           matchMode: config.matchMode,
         },
         i
@@ -100,7 +123,7 @@ export default function Home() {
 
   const isConfigComplete =
     config.lookupColumn &&
-    config.returnColumn &&
+    config.returnColumns.length > 0 &&
     config.lookupRangeStartCol &&
     config.lookupRangeEndCol;
 
@@ -113,8 +136,8 @@ export default function Home() {
             <FileSpreadsheet className="size-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-foreground tracking-tight">VLOOKUP 公式助手</h1>
-            <p className="text-xs text-muted-foreground">可视化配置，批量生成 Excel VLOOKUP 公式</p>
+            <h1 className="text-lg font-bold text-foreground tracking-tight">VLOOKUP Formula Builder</h1>
+            <p className="text-xs text-muted-foreground">Build VLOOKUP formulas visually — no Excel expertise needed</p>
           </div>
         </div>
       </header>
@@ -129,15 +152,19 @@ export default function Home() {
 
         {/* Step 1: Upload */}
         <section className="space-y-4">
-          <StepHeader step={1} title="上传 Excel 文件" desc="上传最多 2 份文件，作为查找值来源和查找范围" />
+          <StepHeader
+            step={1}
+            title="Upload Your Excel Files"
+            desc="Upload up to 2 files — one with the data you want to look up, and one with the reference table to match against."
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FileUpload
-              label="文件 1（源文件 - 查找值所在）"
+              label="File 1 — Source data (contains lookup values)"
               file={rawFiles[0]}
               onFileChange={(f) => handleFileChange(0, f)}
             />
             <FileUpload
-              label="文件 2（目标文件 - 查找范围所在）"
+              label="File 2 — Reference table (contains data to match)"
               file={rawFiles[1]}
               onFileChange={(f) => handleFileChange(1, f)}
             />
@@ -145,7 +172,7 @@ export default function Home() {
           {loading && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <div className="size-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-              正在解析文件...
+              Parsing file...
             </div>
           )}
         </section>
@@ -153,7 +180,11 @@ export default function Home() {
         {/* Step 2: Preview */}
         {uploadedFiles.length > 0 && (
           <section className="space-y-4">
-            <StepHeader step={2} title="数据预览" desc="确认数据内容，可切换工作表" />
+            <StepHeader
+              step={2}
+              title="Preview Your Data"
+              desc="Review the contents of your uploaded files. Switch between sheets if needed."
+            />
             <div className="grid grid-cols-1 gap-6">
               {files.map((file, index) =>
                 file ? (
@@ -175,7 +206,11 @@ export default function Home() {
         {/* Step 3: Config */}
         {uploadedFiles.length >= 1 && (
           <section className="space-y-4">
-            <StepHeader step={3} title="配置 VLOOKUP 参数" desc="通过下拉框选择查找值列、查找范围、返回列和匹配方式" />
+            <StepHeader
+              step={3}
+              title="Configure Your VLOOKUP"
+              desc="Select which columns to use for matching and what data to return. You can return multiple columns at once."
+            />
             <div className="rounded-xl border border-border bg-card p-6">
               <VlookupConfigPanel
                 files={uploadedFiles.map((f) => ({ fileName: f.fileName, sheets: f.sheets, activeSheet: f.activeSheet }))}
@@ -193,7 +228,11 @@ export default function Home() {
         {/* Step 4: Output */}
         {isConfigComplete && (
           <section className="space-y-4">
-            <StepHeader step={4} title="输出结果" desc="复制公式、预览匹配结果或下载 Excel 文件" />
+            <StepHeader
+              step={4}
+              title="Your Results"
+              desc="Copy formulas, preview matched data, or download everything as an Excel file."
+            />
             <div className="rounded-xl border border-border bg-card p-6">
               <OutputPanel
                 formulas={formulas}
@@ -201,7 +240,7 @@ export default function Home() {
                 targetSheet={targetSheet}
                 config={config}
                 lookupColumn={config.lookupColumn}
-                returnColumn={config.returnColumn}
+                returnColumns={config.returnColumns}
               />
             </div>
           </section>
@@ -213,10 +252,10 @@ export default function Home() {
             <div className="size-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4">
               <Sparkles className="size-8 text-emerald-600" />
             </div>
-            <h2 className="text-lg font-semibold text-foreground mb-2">开始使用</h2>
-            <p className="text-sm text-muted-foreground max-w-md">
-              上传 Excel 文件后，通过可视化界面配置 VLOOKUP 参数，
-              即可批量生成公式、预览匹配结果或导出 Excel 文件
+            <h2 className="text-lg font-semibold text-foreground mb-2">Get Started</h2>
+            <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
+              Upload your Excel files above, then use the visual controls to configure your VLOOKUP.
+              We&apos;ll generate the formulas for you — no need to memorize syntax or cell references.
             </p>
           </div>
         )}
@@ -225,7 +264,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border mt-12">
         <div className="mx-auto max-w-6xl px-4 py-4 text-center text-xs text-muted-foreground">
-          VLOOKUP 公式助手 — 纯前端处理，文件数据不会上传至服务器
+          VLOOKUP Formula Builder — All processing happens in your browser. Your files never leave your device.
         </div>
       </footer>
     </div>
