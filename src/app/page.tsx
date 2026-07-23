@@ -121,6 +121,11 @@ export default function Home() {
     return file?.sheets.find((s) => s.name === config.sourceSheetName) ?? null;
   }, [files, config.sourceFileIndex, config.sourceSheetName]);
 
+  const sourceFileName = useMemo(() => {
+    const file = files[config.sourceFileIndex];
+    return file?.fileName ?? 'vlookup_result';
+  }, [files, config.sourceFileIndex]);
+
   const targetSheet = useMemo(() => {
     const file = files[config.targetFileIndex];
     return file?.sheets.find((s) => s.name === config.targetSheetName) ?? null;
@@ -311,6 +316,7 @@ export default function Home() {
               <OutputPanel
                 formulas={formulas}
                 sourceSheet={sourceSheet}
+                sourceFileName={sourceFileName}
                 targetSheet={targetSheet}
                 config={config}
                 lookupColumn={config.lookupColumn}

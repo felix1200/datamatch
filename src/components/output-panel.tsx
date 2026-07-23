@@ -12,13 +12,14 @@ import type { VlookupConfig } from './vlookup-config';
 interface OutputPanelProps {
   formulas: string[][];
   sourceSheet: SheetData | null;
+  sourceFileName: string;
   targetSheet: SheetData | null;
   config: VlookupConfig;
   lookupColumn: string;
   returnColumns: string[];
 }
 
-export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookupColumn, returnColumns }: OutputPanelProps) {
+export function OutputPanel({ formulas, sourceSheet, sourceFileName, targetSheet, config, lookupColumn, returnColumns }: OutputPanelProps) {
   const [copiedIndex, setCopiedIndex] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('download');
 
@@ -43,17 +44,31 @@ export function OutputPanel({ formulas, sourceSheet, targetSheet, config, lookup
   const handleDownload = useCallback(() => {
     if (!sourceSheet || !matchResults) return;
 
+    // Build result column names
+    const resultColNames = returnColumns.map((col) => `${col} (VLOOKUP)`);
+
+    // Full header list: all original columns first, then VLOOKUP result columns
+    const allHeaders = [...sourceSheet.headers, ...resultColNames];
+
+    // Build export data: every original column preserved, plus new result columns appended
     const exportData = sourceSheet.rows.map((row, i) => {
       const result = matchResults[i];
-      const resultCols: Record<string, string | number | boolean | null> = {};
-      returnColumns.forEach((col, j) => {
-        resultCols[`${col} (VLOOKUP)`] = result?.returnValues[j] ?? '#N/A';
+      const out: Record<string, string | number | boolean | null> = {};
+      // Preserve ALL original columns in their original order
+      sourceSheet.headers.forEach((h) => {
+        out[h] = row[h] ?? null;
       });
-      return { ...row, ...resultCols };
+      // Append VLOOKUP result columns
+      resultColNames.forEach((colName, j) => {
+        out[colName] = result?.returnValues[j] ?? '#N/A';
+      });
+      return out;
     });
 
-    generateExcelFile(exportData, 'vlookup_result.xlsx');
-  }, [sourceSheet, matchResults, returnColumns]);
+    // Derive output file name from source file name
+    const baseName = sourceFileName.replace(/\.[^.]+$/, '');
+    generateExcelFile(exportData, `${baseName}_VLOOKUP结果.xlsx`, allHeaders);
+  }, [sourceSheet, sourceFileName, matchResults, returnColumns]);
 
   if (formulas.length === 0) {
     return (

@@ -22,11 +22,38 @@ export function parseExcelFile(file: File): Promise<ExcelFile> {
         const workbook = XLSX.read(data, { type: 'array' });
         const sheets: SheetData[] = workbook.SheetNames.map((name) => {
           const worksheet = workbook.Sheets[name];
-          const jsonData = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | null>>(worksheet, {
+          // Use header:1 to get raw 2D array — preserves ALL columns including empty ones
+          const rawRows = XLSX.utils.sheet_to_json<(string | number | boolean | null)[]>(worksheet, {
+            header: 1,
             defval: null,
+            blankrows: false,
           });
-          const headers = jsonData.length > 0 ? Object.keys(jsonData[0]) : [];
-          return { name, headers, rows: jsonData };
+
+          if (rawRows.length === 0) {
+            return { name, headers: [], rows: [] };
+          }
+
+          // First row = headers; ensure all are strings and handle duplicates
+          const rawHeaders = rawRows[0].map((h) => (h == null ? '' : String(h)));
+          // Deduplicate header names (e.g. two columns both named "ID")
+          const seen = new Map<string, number>();
+          const headers = rawHeaders.map((h) => {
+            const displayName = h || '(空列名)';
+            const count = seen.get(displayName) ?? 0;
+            seen.set(displayName, count + 1);
+            return count > 0 ? `${displayName}_${count + 1}` : displayName;
+          });
+
+          // Build row objects using the full header list — guarantees every column is kept
+          const dataRows = rawRows.slice(1).map((rawRow) => {
+            const row: Record<string, string | number | boolean | null> = {};
+            headers.forEach((header, colIdx) => {
+              row[header] = colIdx < rawRow.length ? (rawRow[colIdx] ?? null) : null;
+            });
+            return row;
+          });
+
+          return { name, headers, rows: dataRows };
         });
         resolve({
           id: crypto.randomUUID(),
@@ -45,9 +72,13 @@ export function parseExcelFile(file: File): Promise<ExcelFile> {
 
 export function generateExcelFile(
   data: Record<string, string | number | boolean | null>[],
-  fileName: string
+  fileName: string,
+  headers?: string[]
 ): void {
-  const worksheet = XLSX.utils.json_to_sheet(data);
+  // Explicitly pass headers to ensure ALL columns are included in order
+  const worksheet = headers
+    ? XLSX.utils.json_to_sheet(data, { header: headers })
+    : XLSX.utils.json_to_sheet(data);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'VLOOKUP Result');
   XLSX.writeFile(workbook, fileName);
