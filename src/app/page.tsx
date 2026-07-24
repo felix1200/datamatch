@@ -200,6 +200,29 @@ export default function Home() {
                 Upload your files, pick the columns to match, and get results instantly. No formulas needed.
               </p>
 
+              {/* File Mode Toggle - Prominent */}
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <span className="text-[14px] font-medium text-[#1d1d1f]">Mode:</span>
+                <div className="flex items-center bg-gray-100 rounded-full p-1 shadow-sm">
+                  <button
+                    onClick={() => handleFileModeChange(true)}
+                    className={`px-4 py-1.5 text-[13px] font-medium rounded-full transition-all ${
+                      isSingleFile ? 'bg-white text-[#1d1d1f] shadow-md' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                    }`}
+                  >
+                    One file
+                  </button>
+                  <button
+                    onClick={() => handleFileModeChange(false)}
+                    className={`px-4 py-1.5 text-[13px] font-medium rounded-full transition-all ${
+                      !isSingleFile ? 'bg-white text-[#1d1d1f] shadow-md' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                    }`}
+                  >
+                    Two files
+                  </button>
+                </div>
+              </div>
+
               {/* Upload Card */}
               <div className="max-w-md mx-auto mb-12">
                 <FileUploadArea
@@ -257,29 +280,7 @@ export default function Home() {
           <div className="flex-1 flex gap-0 overflow-hidden">
             {/* Left: Upload + Preview */}
             <div className="w-[45%] flex flex-col">
-              {/* File Mode Toggle - Prominent */}
               <div className="px-5 pt-4 pb-2">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-[13px] font-medium text-[#1d1d1f]">Source</span>
-                  <div className="flex items-center bg-gray-100 rounded-full p-0.5">
-                    <button
-                      onClick={() => handleFileModeChange(true)}
-                      className={`px-3 py-1 text-[12px] font-medium rounded-full transition-all ${
-                        isSingleFile ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-                      }`}
-                    >
-                      One file
-                    </button>
-                    <button
-                      onClick={() => handleFileModeChange(false)}
-                      className={`px-3 py-1 text-[12px] font-medium rounded-full transition-all ${
-                        !isSingleFile ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-                      }`}
-                    >
-                      Two files
-                    </button>
-                  </div>
-                </div>
                 <FileUploadArea
                   files={files}
                   onFilesAdded={handleFilesAdded}
