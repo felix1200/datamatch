@@ -350,6 +350,7 @@ export default function Home() {
             <Link href="/terms" className="text-[12px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">Terms</Link>
             <Link href="/cookies" className="text-[12px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">Cookies</Link>
             <Link href="/refund-policy" className="text-[12px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">Refunds</Link>
+            <Link href="/contact" className="text-[12px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">Contact</Link>
             <div className="h-3 w-px bg-black/[0.08]" />
             <Link href="/admin" className="text-[12px] text-[#6e6e73]/60 hover:text-[#1d1d1f] transition-colors">Admin</Link>
           </div>

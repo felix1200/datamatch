@@ -1,156 +1,188 @@
 import LegalLayout from '@/components/legal-layout';
 
 export const metadata = {
-  title: 'Terms of Service — DataMatch',
-  description: 'Terms of Service for DataMatch. Read our terms and conditions for using our service.',
+  title: 'Terms of Service - DataMatch',
+  description: 'Terms of Service for DataMatch - Match & look up data between Excel spreadsheets',
 };
 
 export default function TermsOfService() {
   return (
-    <LegalLayout title="Terms of Service" lastUpdated="July 24, 2025">
-      <div className="space-y-8 text-gray-700 leading-relaxed">
-        <section>
-          <p className="text-lg">
-            Welcome to DataMatch. These Terms of Service (&quot;Terms&quot;) govern your access to and use of our website, products, and services (collectively, the &quot;Services&quot;).
-          </p>
-          <p className="mt-4">
-            By accessing or using our Services, you agree to be bound by these Terms. If you do not agree to these Terms, you may not use the Services.
-          </p>
-        </section>
+    <LegalLayout title="Terms of Service" lastUpdated="July 24, 2026">
+      <p className="lead">
+        Welcome to DataMatch (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). These Terms of Service (&quot;Terms&quot;) govern your access to and use of our website, tools, and services (collectively, the &quot;Service&quot;).
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Acceptance of Terms</h2>
-          <p>By creating an account or using our Services, you confirm that:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>You are at least 16 years old (or the age of majority in your jurisdiction)</li>
-            <li>You have the legal capacity to enter into these Terms</li>
-            <li>You will comply with all applicable laws and regulations</li>
-            <li>You will not use the Services for any illegal or unauthorized purpose</li>
-          </ul>
-        </section>
+      <p>
+        By accessing or using the Service, you agree to be bound by these Terms. If you do not agree to these Terms, do not use the Service.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Accounts</h2>
-          <p>When you create an account with us, you must provide accurate and complete information. You are responsible for:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Maintaining the confidentiality of your account credentials</li>
-            <li>All activities that occur under your account</li>
-            <li>Notifying us immediately of any unauthorized access</li>
-          </ul>
-          <p className="mt-2">We reserve the right to suspend or terminate accounts that violate these Terms.</p>
-        </section>
+      <h2>1. Description of Service</h2>
+      <p>
+        DataMatch is a web-based tool that helps users match, look up, and merge data between Excel spreadsheets. The Service processes files entirely in your browser — no data is uploaded to our servers.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Free Plan and Downloads</h2>
-          <h3 className="font-medium text-gray-900 mb-2">3.1 Free Plan</h3>
-          <p>Our free plan allows you to upload and process Excel files without limitation. However, downloading processed results requires a one-time payment of $2.00 per unique file.</p>
+      <h2>2. Eligibility</h2>
+      <p>To use the Service, you must:</p>
+      <ul>
+        <li>Be at least 13 years of age (or the minimum age of digital consent in your country)</li>
+        <li>Have the legal capacity to enter into these Terms</li>
+        <li>Not be prohibited from using the Service under applicable law</li>
+      </ul>
 
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">3.2 Download Fees</h3>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Each unique file (identified by content hash) requires a $2.00 download fee for free plan users</li>
-            <li>Once you have paid for a file, you may download it again at no additional charge</li>
-            <li>Subscription plan users (Pro/Business) have downloads included in their subscription</li>
-          </ul>
+      <h2>3. User Accounts</h2>
+      <h3>3.1 Account Creation</h3>
+      <p>
+        Some features require a user account. When creating an account, you must provide accurate and complete information. You are responsible for maintaining the confidentiality of your account credentials.
+      </p>
 
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">3.3 Subscription Plans</h3>
-          <p>We offer monthly and yearly subscription plans. Subscription fees are billed in advance for each billing period.</p>
-        </section>
+      <h3>3.2 Account Security</h3>
+      <p>
+        You are responsible for all activities that occur under your account. You must notify us immediately of any unauthorized access or security breach.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Payment Terms</h2>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>All payments are processed securely through our payment provider (Stripe)</li>
-            <li>Prices are in US Dollars (USD) unless otherwise stated</li>
-            <li>Subscription fees are non-refundable except as required by law</li>
-            <li>We may change prices with 30 days&apos; notice</li>
-            <li>You are responsible for all applicable taxes</li>
-          </ul>
-        </section>
+      <h3>3.3 Account Termination</h3>
+      <p>
+        We reserve the right to suspend or terminate your account at any time for violation of these Terms. You may delete your account at any time through your account settings or by contacting us.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Cancellation and Refunds</h2>
-          <h3 className="font-medium text-gray-900 mb-2">5.1 Subscription Cancellation</h3>
-          <p>You may cancel your subscription at any time. Cancellation takes effect at the end of your current billing period. You will continue to have access to paid features until the end of that period.</p>
-
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">5.2 Refund Policy</h3>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Download fees ($2.00 per file) are non-refundable once the download has been initiated</li>
-            <li>Subscription fees may be refunded within 14 days of purchase if you have not used the paid features</li>
-            <li>For annual subscriptions, pro-rated refunds may be available within the first 30 days</li>
-            <li>Contact us at <a href="mailto:support@datamatch.app" className="text-emerald-600 hover:underline">support@datamatch.app</a> for refund requests</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Acceptable Use</h2>
-          <p>You agree not to:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Use the Services for any unlawful purpose</li>
-            <li>Attempt to gain unauthorized access to our systems</li>
-            <li>Transmit viruses, malware, or other harmful code</li>
-            <li>Interfere with or disrupt the Services</li>
-            <li>Scrape, mine, or extract data from the Services without permission</li>
-            <li>Share your account credentials with others</li>
-            <li>Use the Services to process data that violates any third-party rights</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Intellectual Property</h2>
-          <p>The Services, including all content, features, and functionality, are owned by DataMatch and are protected by copyright, trademark, and other intellectual property laws. You may not reproduce, distribute, or create derivative works without our express written permission.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Your Content</h2>
-          <p>You retain all rights to the files and data you process using our Services. Since all processing happens in your browser, we never access or store your file contents. We do not claim any ownership over your data.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">9. Disclaimer of Warranties</h2>
-          <p className="font-medium">THE SERVICES ARE PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.</p>
-          <p className="mt-2">We do not warrant that:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>The Services will be uninterrupted or error-free</li>
-            <li>The results obtained from the Services will be accurate or reliable</li>
-            <li>The quality of any products or services will meet your expectations</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">10. Limitation of Liability</h2>
-          <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, DATAMATCH SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, OR GOODWILL, ARISING OUT OF YOUR USE OF THE SERVICES.</p>
-          <p className="mt-2">Our total liability shall not exceed the amount you paid us in the 12 months preceding the claim.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">11. Indemnification</h2>
-          <p>You agree to indemnify and hold harmless DataMatch, its officers, directors, employees, and agents from any claims, damages, losses, or expenses arising from your use of the Services or violation of these Terms.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">12. Governing Law</h2>
-          <p>These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of law provisions.</p>
-          <p className="mt-2">Any disputes arising from these Terms shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">13. EU Consumer Rights</h2>
-          <p>If you are a consumer in the European Union, you have a 14-day right of withdrawal for digital content purchases. However, by using our Services, you acknowledge that you consent to the immediate performance of the service and waive your right of withdrawal for digital content that has been fully performed.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">14. Changes to Terms</h2>
-          <p>We reserve the right to modify these Terms at any time. We will provide notice of significant changes via email or through our Services. Your continued use of the Services after changes constitutes acceptance of the new Terms.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">15. Contact</h2>
-          <p>For questions about these Terms, please contact us:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Email: <a href="mailto:legal@datamatch.app" className="text-emerald-600 hover:underline">legal@datamatch.app</a></li>
-          </ul>
-        </section>
+      <h2>4. Free Tier Usage</h2>
+      <p>
+        Free tier users may upload and process an unlimited number of Excel files. However, downloading processed results requires a one-time payment of $2.00 USD per unique file.
+      </p>
+      <div className="info-box">
+        <strong>Same File, No Repeat Charge</strong>
+        If you download a processed file and later need to download it again, you will not be charged again. Each unique file (identified by content hash) can be downloaded once for $2.00.
       </div>
+
+      <h2>5. Paid Subscriptions</h2>
+      <h3>5.1 Subscription Plans</h3>
+      <p>We offer the following subscription plans:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Monthly</th>
+            <th>Yearly</th>
+            <th>Downloads</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Free</td>
+            <td>$0</td>
+            <td>$0</td>
+            <td>$2/file</td>
+          </tr>
+          <tr>
+            <td>Pro</td>
+            <td>$9</td>
+            <td>$79</td>
+            <td>Included</td>
+          </tr>
+          <tr>
+            <td>Business</td>
+            <td>$29</td>
+            <td>$249</td>
+            <td>Included</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>5.2 Billing</h3>
+      <p>
+        Subscription fees are billed in advance on a monthly or yearly basis, depending on your selected plan. All fees are in US Dollars (USD) and are non-refundable except as specified in our <a href="/refund-policy">Refund Policy</a>.
+      </p>
+
+      <h3>5.3 Cancellation</h3>
+      <p>
+        You may cancel your subscription at any time. Upon cancellation, you will retain access to paid features until the end of your current billing period. No partial refunds will be issued.
+      </p>
+
+      <h2>6. Acceptable Use</h2>
+      <p>You agree NOT to:</p>
+      <ul>
+        <li>Use the Service for any illegal purpose or in violation of any applicable laws</li>
+        <li>Attempt to reverse engineer, decompile, or disassemble any part of the Service</li>
+        <li>Use the Service to process data that infringes on any third party&apos;s intellectual property rights</li>
+        <li>Share your account credentials with others</li>
+        <li>Use automated systems (bots, scrapers) to access the Service</li>
+        <li>Interfere with or disrupt the Service or servers</li>
+        <li>Resell or redistribute the Service without our written consent</li>
+      </ul>
+
+      <h2>7. Intellectual Property</h2>
+      <p>
+        The Service, including its design, features, and code, is owned by DataMatch and protected by copyright, trademark, and other intellectual property laws. You retain ownership of any data you process using the Service.
+      </p>
+
+      <h2>8. Data Processing</h2>
+      <p>
+        All file processing occurs entirely in your browser. We do not upload, store, or have access to your files. For more information, see our <a href="/privacy">Privacy Policy</a>.
+      </p>
+
+      <h2>9. Disclaimer of Warranties</h2>
+      <p>
+        THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+      </p>
+      <p>
+        We do not warrant that the Service will be uninterrupted, error-free, or completely secure. We do not warrant that the results obtained from the Service will be accurate or reliable.
+      </p>
+
+      <h2>10. Limitation of Liability</h2>
+      <p>
+        TO THE MAXIMUM EXTENT PERMITTED BY LAW, DATAMATCH SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF DATA, LOSS OF PROFITS, OR LOSS OF BUSINESS OPPORTUNITY.
+      </p>
+      <p>
+        Our total liability shall not exceed the amount you paid to us in the twelve (12) months preceding the claim.
+      </p>
+
+      <h2>11. Indemnification</h2>
+      <p>
+        You agree to indemnify and hold harmless DataMatch, its officers, directors, employees, and agents from any claims, damages, losses, or expenses arising from your use of the Service or violation of these Terms.
+      </p>
+
+      <h2>12. Changes to the Service</h2>
+      <p>
+        We reserve the right to modify, suspend, or discontinue any part of the Service at any time, with or without notice. We will make reasonable efforts to notify users of significant changes.
+      </p>
+
+      <h2>13. Changes to These Terms</h2>
+      <p>
+        We may update these Terms from time to time. Material changes will be notified via email or a prominent notice on the Service at least 30 days before taking effect. Continued use of the Service after changes take effect constitutes acceptance.
+      </p>
+
+      <h2>14. Governing Law</h2>
+      <p>
+        These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of law provisions.
+      </p>
+
+      <h2>15. Dispute Resolution</h2>
+      <h3>15.1 Informal Resolution</h3>
+      <p>
+        Before filing any claim, you agree to first contact us and attempt to resolve the dispute informally by sending a written notice to <a href="mailto:legal@datamatch.app">legal@datamatch.app</a>.
+      </p>
+
+      <h3>15.2 Binding Arbitration</h3>
+      <p>
+        If informal resolution fails, any dispute shall be resolved through binding arbitration under the rules of the American Arbitration Association (AAA). The arbitration shall take place in Wilmington, Delaware.
+      </p>
+
+      <h3>15.3 Class Action Waiver</h3>
+      <p>
+        You agree to resolve disputes on an individual basis and waive any right to participate in a class action lawsuit or class-wide arbitration.
+      </p>
+
+      <h2>16. Severability</h2>
+      <p>
+        If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in full force and effect.
+      </p>
+
+      <h2>17. Contact Us</h2>
+      <p>If you have questions about these Terms, please contact us:</p>
+      <ul>
+        <li>Email: <a href="mailto:legal@datamatch.app">legal@datamatch.app</a></li>
+        <li>Contact page: <a href="/contact">datamatch.app/contact</a></li>
+      </ul>
     </LegalLayout>
   );
 }

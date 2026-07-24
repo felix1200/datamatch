@@ -125,6 +125,100 @@ body {
   transform: scale(0.97);
 }
 
+/* Prose Apple - Legal content styling */
+.prose-apple {
+  color: #1d1d1f;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.prose-apple h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-top: 2.5em;
+  margin-bottom: 0.8em;
+  letter-spacing: -0.01em;
+}
+.prose-apple h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+}
+.prose-apple p {
+  margin-bottom: 1.2em;
+  color: #424245;
+}
+.prose-apple ul,
+.prose-apple ol {
+  margin-bottom: 1.2em;
+  padding-left: 1.5em;
+}
+.prose-apple li {
+  margin-bottom: 0.5em;
+  color: #424245;
+}
+.prose-apple ul li {
+  list-style-type: disc;
+}
+.prose-apple ol li {
+  list-style-type: decimal;
+}
+.prose-apple strong {
+  font-weight: 600;
+  color: #1d1d1f;
+}
+.prose-apple a {
+  color: #0071e3;
+  text-decoration: none;
+}
+.prose-apple a:hover {
+  text-decoration: underline;
+}
+.prose-apple blockquote {
+  border-left: 3px solid #e5e5e7;
+  padding-left: 1em;
+  margin: 1.5em 0;
+  color: #86868b;
+  font-style: italic;
+}
+.prose-apple hr {
+  border: none;
+  border-top: 1px solid #e5e5e7;
+  margin: 2.5em 0;
+}
+.prose-apple table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 14px;
+}
+.prose-apple th,
+.prose-apple td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e5e7;
+}
+.prose-apple th {
+  font-weight: 600;
+  color: #1d1d1f;
+  background: #f5f5f7;
+}
+.prose-apple .info-box {
+  background: #f5f5f7;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 1.5em 0;
+  font-size: 14px;
+  color: #424245;
+}
+.prose-apple .info-box strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #1d1d1f;
+}
+
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;

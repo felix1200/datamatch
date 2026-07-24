@@ -1,120 +1,142 @@
 import LegalLayout from '@/components/legal-layout';
 
 export const metadata = {
-  title: 'Cookie Policy — DataMatch',
-  description: 'Cookie Policy for DataMatch. Learn how we use cookies and similar technologies.',
+  title: 'Cookie Policy - DataMatch',
+  description: 'Cookie Policy for DataMatch - Learn how we use cookies and tracking technologies',
 };
 
 export default function CookiePolicy() {
   return (
-    <LegalLayout title="Cookie Policy" lastUpdated="July 24, 2025">
-      <div className="space-y-8 text-gray-700 leading-relaxed">
-        <section>
-          <p className="text-lg">
-            This Cookie Policy explains how DataMatch (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) uses cookies and similar technologies to recognize you when you visit our website. It explains what these technologies are and why we use them, as well as your rights to control our use of them.
-          </p>
-        </section>
+    <LegalLayout title="Cookie Policy" lastUpdated="July 24, 2026">
+      <p className="lead">
+        This Cookie Policy explains how DataMatch (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) uses cookies and similar tracking technologies when you visit our website at datamatch.app.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">1. What Are Cookies?</h2>
-          <p>Cookies are small data files that are placed on your computer or mobile device when you visit a website. They are widely used by website owners in order to make their websites work, or to work more efficiently, as well as to provide reporting information.</p>
-          <p className="mt-2">Cookies set by the website owner are called &quot;first-party cookies.&quot; Cookies set by parties other than the website owner are called &quot;third-party cookies.&quot;</p>
-        </section>
+      <h2>1. What Are Cookies?</h2>
+      <p>
+        Cookies are small text files that are placed on your device when you visit a website. They help the website remember your preferences and improve your experience. We also use similar technologies such as localStorage and sessionStorage.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">2. How We Use Cookies</h2>
-          <p>We use cookies for the following purposes:</p>
+      <h2>2. How We Use Cookies</h2>
+      <p>We use cookies for the following purposes:</p>
 
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">2.1 Strictly Necessary Cookies</h3>
-          <p>These cookies are essential for the website to function and cannot be switched off. They are usually only set in response to actions made by you, such as setting your privacy preferences, logging in, or filling in forms.</p>
-          <table className="w-full mt-2 text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 font-medium">Cookie</th>
-                <th className="text-left py-2 font-medium">Purpose</th>
-                <th className="text-left py-2 font-medium">Duration</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-gray-100">
-                <td className="py-2">session_id</td>
-                <td className="py-2">Maintains your session</td>
-                <td className="py-2">Session</td>
-              </tr>
-              <tr className="border-b border-gray-100">
-                <td className="py-2">cookie-consent</td>
-                <td className="py-2">Stores your cookie preferences</td>
-                <td className="py-2">1 year</td>
-              </tr>
-            </tbody>
-          </table>
+      <h3>2.1 Strictly Necessary Cookies</h3>
+      <p>These cookies are essential for the website to function properly. They cannot be disabled.</p>
+      <ul>
+        <li><strong>Session management</strong>: Keeping you logged in and maintaining your session</li>
+        <li><strong>Security</strong>: Protecting against fraudulent activity and verifying your identity</li>
+        <li><strong>Cookie preferences</strong>: Remembering your cookie consent choices</li>
+      </ul>
 
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">2.2 Analytics Cookies</h3>
-          <p>These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously.</p>
-          <table className="w-full mt-2 text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 font-medium">Cookie</th>
-                <th className="text-left py-2 font-medium">Purpose</th>
-                <th className="text-left py-2 font-medium">Duration</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-gray-100">
-                <td className="py-2">_ga, _ga_*</td>
-                <td className="py-2">Google Analytics - tracks page views</td>
-                <td className="py-2">2 years</td>
-              </tr>
-            </tbody>
-          </table>
+      <h3>2.2 Functional Cookies</h3>
+      <p>These cookies enable enhanced functionality and personalization.</p>
+      <ul>
+        <li><strong>User preferences</strong>: Remembering your settings and choices</li>
+        <li><strong>Usage tracking</strong>: Tracking your file processing count for billing purposes</li>
+      </ul>
 
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">2.3 Functional Cookies</h3>
-          <p>These cookies enable enhanced functionality and personalization. They may be set by us or by third-party providers whose services we have added to our pages.</p>
-        </section>
+      <h3>2.3 Analytics Cookies</h3>
+      <p>These cookies help us understand how visitors use our website.</p>
+      <ul>
+        <li><strong>Google Analytics</strong>: Tracking website traffic and user behavior to improve our service</li>
+        <li><strong>Performance monitoring</strong>: Identifying and fixing technical issues</li>
+      </ul>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Your Choices</h2>
-          <p>You have several options to control cookies:</p>
-
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">3.1 Cookie Consent Banner</h3>
-          <p>When you first visit our website, you will see a cookie consent banner where you can choose to accept all cookies or only necessary cookies.</p>
-
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">3.2 Browser Settings</h3>
-          <p>Most browsers allow you to control cookies through their settings. You can:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>View what cookies are stored and delete them individually</li>
-            <li>Block third-party cookies</li>
-            <li>Block cookies from particular sites</li>
-            <li>Block all cookies</li>
-            <li>Delete all cookies when you close your browser</li>
-          </ul>
-          <p className="mt-2">Please note that if you block cookies, some features of our website may not function properly.</p>
-
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">3.3 Opt-Out Links</h3>
-          <p>Some third-party services provide opt-out options:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Google Analytics: <a href="https://tools.google.com/dlpage/ga_optout" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline">Google Analytics Opt-out</a></li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Do Not Track</h2>
-          <p>Some browsers have a &quot;Do Not Track&quot; feature that lets you tell websites that you do not want to have your online activities tracked. These features are not yet uniform, and we do not currently respond to these signals.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Updates to This Policy</h2>
-          <p>We may update this Cookie Policy from time to time to reflect changes in technology, legislation, or our data practices. When we make changes, we will update the &quot;Last updated&quot; date at the top of this page.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Contact Us</h2>
-          <p>If you have any questions about our use of cookies, please contact us:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Email: <a href="mailto:privacy@datamatch.app" className="text-emerald-600 hover:underline">privacy@datamatch.app</a></li>
-          </ul>
-        </section>
+      <h2>3. Cookies We Use</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b-2 border-apple-border">
+              <th className="text-left py-2 pr-4">Name</th>
+              <th className="text-left py-2 pr-4">Type</th>
+              <th className="text-left py-2 pr-4">Duration</th>
+              <th className="text-left py-2">Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-apple-border/50">
+              <td className="py-2 pr-4 font-mono text-xs">dm_session</td>
+              <td className="py-2 pr-4">Necessary</td>
+              <td className="py-2 pr-4">Session</td>
+              <td className="py-2">User session management</td>
+            </tr>
+            <tr className="border-b border-apple-border/50">
+              <td className="py-2 pr-4 font-mono text-xs">dm_cookie_consent</td>
+              <td className="py-2 pr-4">Necessary</td>
+              <td className="py-2 pr-4">1 year</td>
+              <td className="py-2">Stores cookie preferences</td>
+            </tr>
+            <tr className="border-b border-apple-border/50">
+              <td className="py-2 pr-4 font-mono text-xs">dm_usage</td>
+              <td className="py-2 pr-4">Functional</td>
+              <td className="py-2 pr-4">1 month</td>
+              <td className="py-2">Tracks usage for billing</td>
+            </tr>
+            <tr>
+              <td className="py-2 pr-4 font-mono text-xs">_ga, _gid</td>
+              <td className="py-2 pr-4">Analytics</td>
+              <td className="py-2 pr-4">2 years / 24 hours</td>
+              <td className="py-2">Google Analytics tracking</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+
+      <h2>4. Third-Party Cookies</h2>
+      <p>Some cookies are placed by third-party services that we use:</p>
+      <ul>
+        <li><strong>Google Analytics</strong>: For website analytics and performance measurement</li>
+        <li><strong>Stripe</strong>: For payment processing (only on checkout pages)</li>
+      </ul>
+      <p>
+        These third parties have their own privacy policies. We encourage you to review them.
+      </p>
+
+      <h2>5. Your Choices</h2>
+
+      <h3>5.1 Cookie Consent Banner</h3>
+      <p>
+        When you first visit our website, you will see a cookie consent banner that allows you to accept or reject non-essential cookies. You can change your preferences at any time.
+      </p>
+
+      <h3>5.2 Browser Settings</h3>
+      <p>
+        Most web browsers allow you to control cookies through their settings. You can:
+      </p>
+      <ul>
+        <li>View what cookies are stored and delete them individually</li>
+        <li>Block all cookies</li>
+        <li>Allow only first-party cookies</li>
+        <li>Delete all cookies when you close your browser</li>
+      </ul>
+      <p>
+        Please note that blocking some cookies may affect the functionality of our website.
+      </p>
+
+      <h3>5.3 Opt-Out Links</h3>
+      <p>
+        You can opt out of Google Analytics by installing the{' '}
+        <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">
+          Google Analytics Opt-out Browser Add-on
+        </a>.
+      </p>
+
+      <h2>6. Do Not Track</h2>
+      <p>
+        Some browsers have a &quot;Do Not Track&quot; (DNT) feature that signals to websites that you do not want to be tracked. We currently do not respond to DNT signals, but we do respect the Global Privacy Control (GPC) signal where required by law.
+      </p>
+
+      <h2>7. Changes to This Policy</h2>
+      <p>
+        We may update this Cookie Policy from time to time. The &quot;Last Updated&quot; date at the top indicates when this policy was last revised. We encourage you to review this policy periodically.
+      </p>
+
+      <h2>8. Contact Us</h2>
+      <p>If you have questions about our use of cookies:</p>
+      <ul>
+        <li>Email: <a href="mailto:privacy@datamatch.app">privacy@datamatch.app</a></li>
+        <li>Contact page: <a href="/contact">datamatch.app/contact</a></li>
+      </ul>
     </LegalLayout>
   );
 }

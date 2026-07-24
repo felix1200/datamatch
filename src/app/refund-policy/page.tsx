@@ -1,97 +1,151 @@
 import LegalLayout from '@/components/legal-layout';
 
 export const metadata = {
-  title: 'Refund Policy — DataMatch',
-  description: 'Refund Policy for DataMatch. Learn about our refund and cancellation terms.',
+  title: 'Refund Policy - DataMatch',
+  description: 'Refund Policy for DataMatch - Understand our refund terms and conditions',
 };
 
 export default function RefundPolicy() {
   return (
-    <LegalLayout title="Refund Policy" lastUpdated="July 24, 2025">
-      <div className="space-y-8 text-gray-700 leading-relaxed">
-        <section>
-          <p className="text-lg">
-            At DataMatch, we want you to be satisfied with your purchase. This Refund Policy explains when and how you can request a refund.
-          </p>
-        </section>
+    <LegalLayout title="Refund Policy" lastUpdated="July 24, 2026">
+      <p className="lead">
+        We want you to be satisfied with your DataMatch purchase. This Refund Policy explains when and how you can request a refund.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Download Fees (Free Plan Users)</h2>
-          <p>For users on the Free plan, each unique file download costs $2.00 USD.</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li><strong>No refund</strong> once the download has been initiated</li>
-            <li>If a download fails due to a technical error on our side, we will provide a free re-download or refund upon request</li>
-            <li>The same file can be downloaded again at no additional charge after the initial payment</li>
-          </ul>
-        </section>
+      <h2>1. Per-File Download Purchases (Free Tier)</h2>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Subscription Plans</h2>
-          <h3 className="font-medium text-gray-900 mb-2">2.1 Monthly Subscriptions</h3>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Refunds available within <strong>14 days</strong> of the initial subscription purchase</li>
-            <li>Refund is only available if you have <strong>not downloaded any files</strong> during the subscription period</li>
-            <li>After 14 days or after first download, no refunds will be issued</li>
-          </ul>
+      <h3>1.1 Pricing</h3>
+      <p>
+        Free tier users are charged $2.00 USD per unique file download. A &quot;unique file&quot; is identified by its content hash — the same file downloaded multiple times is only charged once.
+      </p>
 
-          <h3 className="font-medium text-gray-900 mb-2 mt-4">2.2 Annual Subscriptions</h3>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Refunds available within <strong>30 days</strong> of the initial subscription purchase</li>
-            <li>Refund is only available if you have <strong>not downloaded any files</strong> during the subscription period</li>
-            <li>After 30 days or after first download, no refunds will be issued</li>
-          </ul>
-        </section>
+      <h3>1.2 Refund Eligibility</h3>
+      <p>
+        Due to the nature of digital goods (instant delivery of processed files), <strong>per-file download purchases are generally non-refundable</strong>. However, we will consider refunds in the following cases:
+      </p>
+      <ul>
+        <li>The downloaded file is corrupted or unreadable due to a technical error on our end</li>
+        <li>The file does not contain the expected matched data due to a system malfunction</li>
+        <li>You were charged multiple times for the same file (duplicate charge)</li>
+      </ul>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Cancellation</h2>
-          <p>You can cancel your subscription at any time:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Cancellation takes effect at the end of your current billing period</li>
-            <li>You will retain access to paid features until the end of the billing period</li>
-            <li>No partial refunds for unused time in the current billing period</li>
-          </ul>
-        </section>
+      <h3>1.3 Refund Request Period</h3>
+      <p>
+        Refund requests for per-file downloads must be submitted within <strong>7 days</strong> of the purchase date.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Exceptions</h2>
-          <p>We may issue refunds outside of this policy in the following circumstances:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Service was unavailable for an extended period (more than 48 hours)</li>
-            <li>Duplicate charges due to a billing error</li>
-            <li>Unauthorized charges on your account</li>
-            <li>As required by applicable law</li>
-          </ul>
-        </section>
+      <h2>2. Subscription Plans (Pro & Business)</h2>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">5. EU Consumer Rights</h2>
-          <p>If you are a consumer in the European Union, you have a statutory 14-day right of withdrawal. However, for digital content that is fully performed (i.e., you have used the download feature), you acknowledge that you consented to immediate performance and waived your right of withdrawal.</p>
-        </section>
+      <h3>2.1 14-Day Money-Back Guarantee</h3>
+      <p>
+        New subscribers are eligible for a full refund within <strong>14 days</strong> of their initial subscription purchase, no questions asked. This applies to both monthly and yearly plans.
+      </p>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">6. How to Request a Refund</h2>
-          <p>To request a refund, please contact us at <a href="mailto:support@datamatch.app" className="text-emerald-600 hover:underline">support@datamatch.app</a> with:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Your account email address</li>
-            <li>Date of purchase</li>
-            <li>Reason for the refund request</li>
-          </ul>
-          <p className="mt-2">We will process your request within 5-10 business days. Approved refunds will be issued to the original payment method.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Chargebacks</h2>
-          <p>We strongly encourage you to contact us before initiating a chargeback with your bank or payment provider. Filing a chargeback without first contacting us may result in immediate suspension of your account.</p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Contact</h2>
-          <p>For refund inquiries, please contact:</p>
-          <ul className="list-disc pl-6 mt-2 space-y-1">
-            <li>Email: <a href="mailto:support@datamatch.app" className="text-emerald-600 hover:underline">support@datamatch.app</a></li>
-          </ul>
-        </section>
+      <div className="info-box">
+        <strong>EU/UK Consumer Rights</strong>
+        For customers in the European Union and United Kingdom, you have a 14-day right of withdrawal under EU consumer law. If you purchased a subscription and wish to cancel within 14 days, you are entitled to a full refund.
       </div>
+
+      <h3>2.2 After 14 Days</h3>
+      <p>
+        After the 14-day period, subscriptions are <strong>non-refundable</strong> for the remaining billing period. However, you can cancel at any time to prevent future charges.
+      </p>
+
+      <h3>2.3 Monthly Subscriptions</h3>
+      <p>
+        Monthly subscriptions auto-renew each month. You can cancel before the next billing date to avoid future charges. No partial-month refunds are provided.
+      </p>
+
+      <h3>2.4 Yearly Subscriptions</h3>
+      <p>
+        Yearly subscriptions are billed annually. After the 14-day guarantee period, no refunds are provided for the remaining year.
+      </p>
+
+      <h2>3. How to Request a Refund</h2>
+
+      <h3>Step 1: Contact Support</h3>
+      <p>
+        Send an email to <a href="mailto:billing@datamatch.app">billing@datamatch.app</a> with the subject line &quot;Refund Request&quot;.
+      </p>
+
+      <h3>Step 2: Provide Required Information</h3>
+      <p>Please include the following in your email:</p>
+      <ul>
+        <li>Your account email address</li>
+        <li>Date of purchase</li>
+        <li>Amount charged</li>
+        <li>Reason for refund request</li>
+        <li>For per-file downloads: the file name or transaction ID</li>
+      </ul>
+
+      <h3>Step 3: Review Process</h3>
+      <p>
+        We will review your request within <strong>3-5 business days</strong>. If approved, the refund will be processed to your original payment method.
+      </p>
+
+      <h3>Step 4: Refund Processing</h3>
+      <p>
+        Refunds typically take <strong>5-10 business days</strong> to appear on your statement, depending on your bank or payment provider.
+      </p>
+
+      <h2>4. Exceptions</h2>
+      <p>We may deny refund requests in the following cases:</p>
+      <ul>
+        <li>Request submitted after the applicable refund period</li>
+        <li>Evidence of abuse or fraudulent activity</li>
+        <li>Violation of our Terms of Service</li>
+        <li>Multiple refund requests from the same account</li>
+      </ul>
+
+      <h2>5. Chargebacks</h2>
+      <p>
+        If you initiate a chargeback with your bank or payment provider without first contacting us, we may permanently suspend your account. We strongly encourage you to contact us first to resolve any billing issues.
+      </p>
+
+      <h2>6. Failed Payments</h2>
+      <p>
+        If your payment fails due to insufficient funds or expired payment methods, your subscription will be suspended. You will have <strong>7 days</strong> to update your payment information before your subscription is canceled.
+      </p>
+
+      <h2>7. Service Interruptions</h2>
+      <p>
+        In the event of a significant service interruption (more than 24 consecutive hours), we may provide pro-rated refunds or service credits at our discretion. This does not apply to scheduled maintenance or force majeure events.
+      </p>
+
+      <h2>8. Frequently Asked Questions</h2>
+
+      <h3>Q: Can I get a refund if I don&apos;t use my subscription?</h3>
+      <p>
+        A: Unused subscription time is not eligible for refund after the 14-day guarantee period. We recommend trying the free tier before subscribing.
+      </p>
+
+      <h3>Q: I was charged twice for the same file. What should I do?</h3>
+      <p>
+        A: This is a billing error on our end. Contact us immediately at <a href="mailto:billing@datamatch.app">billing@datamatch.app</a> and we will issue a full refund for the duplicate charge.
+      </p>
+
+      <h3>Q: The downloaded file has errors. Can I get a refund?</h3>
+      <p>
+        A: Yes. If the file is corrupted due to our technical issues, we will either fix the issue or provide a full refund. Please contact support with details.
+      </p>
+
+      <h3>Q: Can I switch plans and get a refund for the difference?</h3>
+      <p>
+        A: When upgrading, you will be charged the prorated difference. When downgrading, the change takes effect at the next billing cycle — no partial refunds are issued.
+      </p>
+
+      <h3>Q: How long does the refund take?</h3>
+      <p>
+        A: Once approved, refunds are processed within 5-10 business days. The actual time depends on your bank or payment provider.
+      </p>
+
+      <h2>9. Contact Us</h2>
+      <p>For billing questions or refund requests:</p>
+      <ul>
+        <li>Email: <a href="mailto:billing@datamatch.app">billing@datamatch.app</a></li>
+        <li>Contact page: <a href="/contact">datamatch.app/contact</a></li>
+        <li>Response time: Within 1-2 business days</li>
+      </ul>
     </LegalLayout>
   );
 }
