@@ -1,8 +1,12 @@
 import { Pool } from 'pg';
 
 // Database connection configuration
-// Use environment variable in production, fallback to provided connection string
-const connectionString = process.env.DATABASE_URL || 'postgresql://USER:PASSWORD@HOST/DB';
+// Connection string is stored in .env.local (never committed to git)
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.warn('DATABASE_URL is not set. Database features will not work.');
+}
 
 // Create a connection pool
 const pool = new Pool({
