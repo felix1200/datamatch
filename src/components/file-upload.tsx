@@ -66,21 +66,21 @@ export function FileUploadArea({ files, onFilesAdded, onRemoveFile, maxFiles, co
     return (
       <div className="flex items-center gap-2 flex-wrap">
         {files.map((f, i) => (
-          <div key={i} className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-md px-2 py-1">
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span className="text-xs text-gray-700 truncate max-w-[120px]">{f.name}</span>
-            <button onClick={() => onRemoveFile(i)} className="text-gray-400 hover:text-red-500 transition-colors">
-              <X className="w-3 h-3" />
+          <div key={i} className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-1.5">
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="text-[13px] text-gray-700 truncate max-w-[140px] font-medium">{f.name}</span>
+            <button onClick={() => onRemoveFile(i)} className="text-gray-400 hover:text-red-500 transition-colors ml-1">
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
         ))}
         {canAddMore && (
           <button
             onClick={handleClick}
-            className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 border border-dashed border-emerald-300 rounded-md px-2 py-1 hover:bg-emerald-50 transition-colors"
+            className="flex items-center gap-1.5 text-[13px] font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border-2 border-dashed border-emerald-400 rounded-lg px-4 py-2 transition-all"
           >
-            <Plus className="w-3 h-3" />
-            Add file
+            <Plus className="w-4 h-4" />
+            {files.length === 0 ? 'Upload file' : 'Add another file'}
           </button>
         )}
         <input ref={inputRef} type="file" accept=".xlsx,.xls,.csv" multiple onChange={handleFileInput} className="hidden" />

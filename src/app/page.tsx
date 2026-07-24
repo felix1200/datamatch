@@ -146,13 +146,6 @@ export default function Home() {
               <Shield className="w-3.5 h-3.5 text-emerald-600" />
               <span className="text-[11px] font-medium text-emerald-700">100% Private</span>
             </div>
-            <div className="h-5 w-px bg-black/[0.08]" />
-            <div className="flex items-center gap-2">
-              <Switch checked={isSingleFile} onCheckedChange={handleFileModeChange} />
-              <Label className="text-[13px] text-[#6e6e73] cursor-pointer" onClick={() => handleFileModeChange(!isSingleFile)}>
-                {isSingleFile ? 'One file' : 'Two files'}
-              </Label>
-            </div>
             {usage.currentPlan === 'free' ? (
               <Link href="/pricing">
                 <Button size="sm" className="h-8 px-4 text-[13px] rounded-full bg-[#1d1d1f] hover:bg-[#1d1d1f]/90 text-white shadow-sm">
@@ -264,7 +257,29 @@ export default function Home() {
           <div className="flex-1 flex gap-0 overflow-hidden">
             {/* Left: Upload + Preview */}
             <div className="w-[45%] flex flex-col">
+              {/* File Mode Toggle - Prominent */}
               <div className="px-5 pt-4 pb-2">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-[13px] font-medium text-[#1d1d1f]">Source</span>
+                  <div className="flex items-center bg-gray-100 rounded-full p-0.5">
+                    <button
+                      onClick={() => handleFileModeChange(true)}
+                      className={`px-3 py-1 text-[12px] font-medium rounded-full transition-all ${
+                        isSingleFile ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                      }`}
+                    >
+                      One file
+                    </button>
+                    <button
+                      onClick={() => handleFileModeChange(false)}
+                      className={`px-3 py-1 text-[12px] font-medium rounded-full transition-all ${
+                        !isSingleFile ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                      }`}
+                    >
+                      Two files
+                    </button>
+                  </div>
+                </div>
                 <FileUploadArea
                   files={files}
                   onFilesAdded={handleFilesAdded}
@@ -274,14 +289,25 @@ export default function Home() {
                   inline
                 />
               </div>
-              <div className="flex-1 overflow-hidden px-5 pb-5">
+              {/* Preview Section */}
+              <div className="flex-1 overflow-hidden px-5 pb-5 flex flex-col gap-3">
                 {sourceSheet && (
-                  <div className="h-full rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04] overflow-hidden">
+                  <div className={`${!isSingleFile && targetSheet ? 'h-1/2' : 'h-full'} rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04] overflow-hidden`}>
                     <CompactPreview
                       sheet={sourceSheet}
                       title={isSingleFile ? config.sourceSheetName || 'Preview' : `${sourceFile?.name} — ${config.sourceSheetName}`}
                       highlightCol={config.lookupValueCol}
                       highlightLabel="Match column"
+                    />
+                  </div>
+                )}
+                {!isSingleFile && targetSheet && (
+                  <div className="h-1/2 rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04] overflow-hidden">
+                    <CompactPreview
+                      sheet={targetSheet}
+                      title={`${targetFile?.name} — ${config.targetSheetName}`}
+                      highlightCol={config.lookupRangeStartCol}
+                      highlightLabel="Lookup range"
                     />
                   </div>
                 )}
