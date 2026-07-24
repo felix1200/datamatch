@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { canProcess, getUsage, type UsageData } from '@/lib/subscription';
+import CookieConsent from '@/components/cookie-consent';
 
 const DEFAULT_CONFIG: VlookupConfig = {
   sourceFileIndex: 0,
@@ -356,6 +357,17 @@ export default function Home() {
           Admin
         </Link>
       </footer>
+
+      {/* Legal links */}
+      <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-400">
+        <Link href="/privacy" className="hover:text-gray-600 transition-colors">Privacy Policy</Link>
+        <Link href="/terms" className="hover:text-gray-600 transition-colors">Terms of Service</Link>
+        <Link href="/cookies" className="hover:text-gray-600 transition-colors">Cookie Policy</Link>
+        <Link href="/refund-policy" className="hover:text-gray-600 transition-colors">Refund Policy</Link>
+      </div>
+
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
     </div>
   );
 }
