@@ -351,6 +351,10 @@ export default function Home() {
           </svg>
           <span>100% client-side processing</span>
         </div>
+        <div className="h-3 w-px bg-gray-200" />
+        <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+          Admin
+        </Link>
       </footer>
     </div>
   );
