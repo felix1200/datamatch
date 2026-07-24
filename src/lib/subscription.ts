@@ -5,8 +5,9 @@ export type PlanType = 'free' | 'pro' | 'business' | 'enterprise';
 
 export interface PlanLimits {
   maxRows: number;
-  maxProcessesPerMonth: number;
   dualFileMode: boolean;
+  downloadsIncluded: boolean; // Whether downloads are included in the subscription
+  downloadPricePerFile: number; // Price per download for free users ($0 if included)
   watermark: boolean;
   prioritySupport: boolean;
   teamFeatures: boolean;
@@ -15,9 +16,10 @@ export interface PlanLimits {
 
 export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   free: {
-    maxRows: 100,
-    maxProcessesPerMonth: 3,
+    maxRows: Infinity, // Unlimited rows for free users
     dualFileMode: false,
+    downloadsIncluded: false, // Free users pay per download
+    downloadPricePerFile: 2.00, // $2 per download
     watermark: true,
     prioritySupport: false,
     teamFeatures: false,
@@ -25,8 +27,9 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   },
   pro: {
     maxRows: 10000,
-    maxProcessesPerMonth: Infinity,
     dualFileMode: true,
+    downloadsIncluded: true, // Downloads included in subscription
+    downloadPricePerFile: 0,
     watermark: false,
     prioritySupport: true,
     teamFeatures: false,
@@ -34,8 +37,9 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   },
   business: {
     maxRows: 100000,
-    maxProcessesPerMonth: Infinity,
     dualFileMode: true,
+    downloadsIncluded: true,
+    downloadPricePerFile: 0,
     watermark: false,
     prioritySupport: true,
     teamFeatures: true,
@@ -43,8 +47,9 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   },
   enterprise: {
     maxRows: Infinity,
-    maxProcessesPerMonth: Infinity,
     dualFileMode: true,
+    downloadsIncluded: true,
+    downloadPricePerFile: 0,
     watermark: false,
     prioritySupport: true,
     teamFeatures: true,
@@ -53,9 +58,8 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
 };
 
 export interface UsageData {
-  processesThisMonth: number;
-  lastResetDate: string; // ISO date string
   currentPlan: PlanType;
+  downloadedFiles: string[]; // Array of file hashes that have been downloaded
 }
 
 const USAGE_KEY = 'datamatch_usage';
@@ -63,26 +67,15 @@ const USAGE_KEY = 'datamatch_usage';
 // Get current usage from localStorage
 export function getUsage(): UsageData {
   if (typeof window === 'undefined') {
-    return { processesThisMonth: 0, lastResetDate: new Date().toISOString(), currentPlan: 'free' };
+    return { currentPlan: 'free', downloadedFiles: [] };
   }
   
   const stored = localStorage.getItem(USAGE_KEY);
   if (!stored) {
-    return { processesThisMonth: 0, lastResetDate: new Date().toISOString(), currentPlan: 'free' };
+    return { currentPlan: 'free', downloadedFiles: [] };
   }
   
-  const usage: UsageData = JSON.parse(stored);
-  
-  // Reset counter if it's a new month
-  const lastReset = new Date(usage.lastResetDate);
-  const now = new Date();
-  if (lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()) {
-    usage.processesThisMonth = 0;
-    usage.lastResetDate = now.toISOString();
-    saveUsage(usage);
-  }
-  
-  return usage;
+  return JSON.parse(stored);
 }
 
 // Save usage to localStorage
@@ -91,12 +84,38 @@ export function saveUsage(usage: UsageData): void {
   localStorage.setItem(USAGE_KEY, JSON.stringify(usage));
 }
 
-// Increment usage counter
-export function incrementUsage(): UsageData {
+// Check if a file has already been downloaded (for free users)
+export function hasFileBeenDownloaded(fileHash: string): boolean {
   const usage = getUsage();
-  usage.processesThisMonth += 1;
-  saveUsage(usage);
-  return usage;
+  return usage.downloadedFiles.includes(fileHash);
+}
+
+// Mark a file as downloaded
+export function markFileAsDownloaded(fileHash: string): void {
+  const usage = getUsage();
+  if (!usage.downloadedFiles.includes(fileHash)) {
+    usage.downloadedFiles.push(fileHash);
+    saveUsage(usage);
+  }
+}
+
+// Check if user needs to pay for download
+export function needsToPayForDownload(fileHash: string): { needsPayment: boolean; price: number } {
+  const usage = getUsage();
+  const limits = PLAN_LIMITS[usage.currentPlan];
+  
+  // If downloads are included in subscription, no payment needed
+  if (limits.downloadsIncluded) {
+    return { needsPayment: false, price: 0 };
+  }
+  
+  // If file has already been downloaded, no payment needed
+  if (hasFileBeenDownloaded(fileHash)) {
+    return { needsPayment: false, price: 0 };
+  }
+  
+  // Free user needs to pay for this download
+  return { needsPayment: true, price: limits.downloadPricePerFile };
 }
 
 // Check if user can process based on their plan
@@ -108,13 +127,6 @@ export function canProcess(rowCount: number, isDualFile: boolean): { allowed: bo
     return {
       allowed: false,
       reason: `Your ${usage.currentPlan} plan supports up to ${limits.maxRows.toLocaleString()} rows. Please upgrade to process more data.`,
-    };
-  }
-  
-  if (usage.processesThisMonth >= limits.maxProcessesPerMonth) {
-    return {
-      allowed: false,
-      reason: `You've used all ${limits.maxProcessesPerMonth} free processes this month. Upgrade to Pro for unlimited processing.`,
     };
   }
   
@@ -160,4 +172,23 @@ export async function fetchSubscriptionStatus(): Promise<{ plan: PlanType; statu
   // TODO: Fetch from actual backend API
   const usage = getUsage();
   return { plan: usage.currentPlan, status: 'active' };
+}
+
+// Placeholder: Pay for download
+export async function payForDownload(fileHash: string, fileName: string, rowCount: number): Promise<{ success: boolean; message: string }> {
+  // TODO: Implement actual payment processing (Stripe, etc.)
+  console.log('TODO: Implement payment for download:', fileHash);
+  
+  // For now, just mark as downloaded (for testing)
+  markFileAsDownloaded(fileHash);
+  
+  return { success: true, message: 'Payment successful (demo mode)' };
+}
+
+// Calculate file hash for tracking downloads
+export async function calculateFileHash(fileContent: ArrayBuffer): Promise<string> {
+  const hashBuffer = await crypto.subtle.digest('SHA-256', fileContent);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
 }

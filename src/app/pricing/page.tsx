@@ -16,15 +16,16 @@ interface PlanFeature {
 }
 
 const FEATURES: PlanFeature[] = [
-  { name: 'Rows per file', free: '100', pro: '10,000', business: '100,000' },
-  { name: 'Processes per month', free: '3', pro: 'Unlimited', business: 'Unlimited' },
+  { name: 'Upload & process files', free: 'Unlimited', pro: 'Unlimited', business: 'Unlimited' },
+  { name: 'Rows per file', free: 'Unlimited', pro: '10,000', business: '100,000' },
+  { name: 'Download results', free: '$2/file', pro: 'Included', business: 'Included' },
+  { name: 'Same file re-download', free: 'Free', pro: 'Free', business: 'Free' },
   { name: 'Dual file mode', free: false, pro: true, business: true },
   { name: 'Batch processing', free: false, pro: true, business: true },
   { name: 'Watermark-free export', free: false, pro: true, business: true },
   { name: 'Priority support', free: false, pro: true, business: true },
   { name: 'Team collaboration', free: false, pro: false, business: true },
   { name: 'API access', free: false, pro: false, business: true },
-  { name: 'Custom branding', free: false, pro: false, business: true },
 ];
 
 const PLANS = [
@@ -32,7 +33,7 @@ const PLANS = [
     id: 'free' as PlanType,
     name: 'Free',
     price: { monthly: 0, yearly: 0 },
-    description: 'Perfect for trying out DataMatch',
+    description: 'Upload & process unlimited files. Pay $2 per download.',
     cta: 'Current Plan',
     popular: false,
   },

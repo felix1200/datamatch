@@ -6,7 +6,9 @@ import { type VlookupResult } from '@/lib/vlookup-engine';
 import { downloadExcelWithResults } from '@/lib/excel-utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Copy, Check, Eye, Code } from 'lucide-react';
+import { Download, Copy, Check, Eye, Code, Lock } from 'lucide-react';
+import { needsToPayForDownload, markFileAsDownloaded, payForDownload, calculateFileHash } from '@/lib/subscription';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface ActionButtonsProps {
   formulas: string[];
@@ -36,6 +38,9 @@ export function ActionButtons({
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [showPayDialog, setShowPayDialog] = useState(false);
+  const [pendingFileHash, setPendingFileHash] = useState<string | null>(null);
+  const [paying, setPaying] = useState(false);
 
   const matchedCount = matchResults.filter((r) => r.matched).length;
   const totalCount = matchResults.length;
@@ -52,6 +57,32 @@ export function ActionButtons({
     setTimeout(() => setCopiedAll(false), 1500);
   };
 
+  const doDownload = async () => {
+    if (!sourceArrayBuffer) return;
+    
+    setDownloading(true);
+    try {
+      await downloadExcelWithResults(
+        sourceArrayBuffer,
+        sourceSheet.name,
+        sourceSheet,
+        returnColumns,
+        matchResults,
+        sourceFileName
+      );
+      // Mark file as downloaded after successful download
+      if (pendingFileHash) {
+        markFileAsDownloaded(pendingFileHash);
+      }
+      if (onAfterDownload) {
+        onAfterDownload();
+      }
+    } finally {
+      setDownloading(false);
+      setPendingFileHash(null);
+    }
+  };
+
   const handleDownload = async () => {
     if (!sourceArrayBuffer) return;
     
@@ -64,22 +95,40 @@ export function ActionButtons({
       }
     }
     
-    setDownloading(true);
+    // Calculate file hash to check if payment is needed
+    const fileHash = await calculateFileHash(sourceArrayBuffer);
+    
+    // Check if payment is needed
+    const { needsPayment, price } = needsToPayForDownload(fileHash);
+    
+    if (needsPayment) {
+      // Show payment dialog
+      setPendingFileHash(fileHash);
+      setShowPayDialog(true);
+      return;
+    }
+    
+    // No payment needed, proceed with download
+    setPendingFileHash(fileHash);
+    await doDownload();
+  };
+
+  const handlePayAndDownload = async () => {
+    if (!pendingFileHash) return;
+    
+    setPaying(true);
     try {
-      await downloadExcelWithResults(
-        sourceArrayBuffer,
-        sourceSheet.name,
-        sourceSheet,
-        returnColumns,
-        matchResults,
-        sourceFileName
-      );
-      // Increment usage after successful download
-      if (onAfterDownload) {
-        onAfterDownload();
+      // TODO: Integrate with actual payment provider (Stripe)
+      const result = await payForDownload(pendingFileHash, sourceFileName, sourceSheet.rows.length);
+      
+      if (result.success) {
+        setShowPayDialog(false);
+        await doDownload();
+      } else {
+        alert(result.message || 'Payment failed. Please try again.');
       }
     } finally {
-      setDownloading(false);
+      setPaying(false);
     }
   };
 
@@ -171,6 +220,55 @@ export function ActionButtons({
           </div>
         </div>
       )}
+
+      {/* Payment Dialog for Free Users */}
+      <Dialog open={showPayDialog} onOpenChange={setShowPayDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5 text-emerald-600" />
+              Download this file
+            </DialogTitle>
+            <DialogDescription>
+              You're on the Free plan. Download costs $2 per file.
+              <br />
+              <span className="text-xs text-gray-500 mt-1 block">
+                Same file can be re-downloaded for free anytime.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">File</span>
+                <span className="font-medium text-gray-900">{sourceFileName}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Rows</span>
+                <span className="font-medium text-gray-900">{sourceSheet.rows.length.toLocaleString()}</span>
+              </div>
+              <div className="border-t pt-2 mt-2 flex justify-between text-sm font-semibold">
+                <span>Total</span>
+                <span className="text-emerald-600">$2.00</span>
+              </div>
+            </div>
+            <div className="mt-4 p-3 bg-emerald-50 rounded-lg">
+              <p className="text-xs text-emerald-700">
+                <strong>Upgrade to Pro</strong> for $9/month and get unlimited downloads included.
+                <a href="/pricing" className="underline ml-1">See plans</a>
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowPayDialog(false)} disabled={paying}>
+              Cancel
+            </Button>
+            <Button onClick={handlePayAndDownload} disabled={paying} className="bg-emerald-600 hover:bg-emerald-700">
+              {paying ? 'Processing...' : 'Pay $2 & Download'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
-import { canProcess, incrementUsage, getUsage, type UsageData } from '@/lib/subscription';
+import { canProcess, getUsage, type UsageData } from '@/lib/subscription';
 
 const DEFAULT_CONFIG: VlookupConfig = {
   sourceFileIndex: 0,
@@ -32,7 +32,7 @@ export default function Home() {
   const [isSingleFile, setIsSingleFile] = useState(true);
   const [config, setConfig] = useState<VlookupConfig>(DEFAULT_CONFIG);
   const [activeTab, setActiveTab] = useState<'download' | 'preview' | 'formula'>('download');
-  const [usage, setUsage] = useState<UsageData>({ processesThisMonth: 0, lastResetDate: new Date().toISOString(), currentPlan: 'free' });
+  const [usage, setUsage] = useState<UsageData>({ currentPlan: 'free', downloadedFiles: [] });
   const [limitError, setLimitError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -153,7 +153,7 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500">
               {usage.currentPlan === 'free' 
-                ? `${usage.processesThisMonth}/3 free uses`
+                ? `${usage.downloadedFiles.length} downloads`
                 : `${usage.currentPlan.charAt(0).toUpperCase() + usage.currentPlan.slice(1)} plan`
               }
             </span>
@@ -303,8 +303,8 @@ export default function Home() {
                       return check;
                     }}
                     onAfterDownload={() => {
-                      const newUsage = incrementUsage();
-                      setUsage(newUsage);
+                      // Refresh usage data after download
+                      setUsage(getUsage());
                     }}
                   />
                 </div>
