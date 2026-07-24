@@ -10,8 +10,7 @@ import { ActionButtons } from '@/components/action-buttons';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Sparkles } from 'lucide-react';
+import { AlertTriangle, Sparkles, ArrowRight, Shield, Zap, Download, Table } from 'lucide-react';
 import Link from 'next/link';
 import { canProcess, getUsage, type UsageData } from '@/lib/subscription';
 import CookieConsent from '@/components/cookie-consent';
@@ -119,131 +118,153 @@ export default function Home() {
 
   const sourceArrayBuffer = sourceFile?.arrayBuffer;
   const sourceFileName = sourceFile?.name || 'data';
-
   const hasFiles = files.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="border-b bg-white px-6 py-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
-            </svg>
-          </div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold text-gray-900 leading-tight">DataMatch</h1>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-medium">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              100% Private
-            </span>
-          </div>
-          <p className="text-xs text-gray-500">Match & look up data between spreadsheets — no formulas needed</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Switch checked={isSingleFile} onCheckedChange={handleFileModeChange} />
-            <Label className="text-sm text-gray-600 cursor-pointer" onClick={() => handleFileModeChange(!isSingleFile)}>
-              {isSingleFile ? 'One file' : 'Two files'}
-            </Label>
-          </div>
-          <div className="h-6 w-px bg-gray-200" />
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">
-              {usage.currentPlan === 'free' 
-                ? `${usage.downloadedFiles.length} downloads`
-                : `${usage.currentPlan.charAt(0).toUpperCase() + usage.currentPlan.slice(1)} plan`
-              }
-            </span>
-            <Link href="/pricing">
-              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
-                <Sparkles className="w-3 h-3" />
-                Upgrade
-              </Button>
+    <div className="min-h-screen bg-[#f5f5f7] flex flex-col">
+      {/* Frosted Glass Navigation */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-black/[0.04]">
+        <div className="max-w-[1200px] mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-sm shadow-emerald-500/20">
+                <Table className="w-4 h-4 text-white" strokeWidth={2.5} />
+              </div>
+              <span className="text-[17px] font-semibold text-[#1d1d1f] tracking-[-0.02em]">DataMatch</span>
             </Link>
+            <div className="hidden sm:flex items-center gap-1">
+              <Link href="/pricing" className="px-3 py-1.5 text-[13px] text-[#6e6e73] hover:text-[#1d1d1f] rounded-full hover:bg-black/[0.04] transition-all">
+                Pricing
+              </Link>
+              <Link href="/privacy" className="px-3 py-1.5 text-[13px] text-[#6e6e73] hover:text-[#1d1d1f] rounded-full hover:bg-black/[0.04] transition-all">
+                Privacy
+              </Link>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">
+              <Shield className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="text-[11px] font-medium text-emerald-700">100% Private</span>
+            </div>
+            <div className="h-5 w-px bg-black/[0.08]" />
+            <div className="flex items-center gap-2">
+              <Switch checked={isSingleFile} onCheckedChange={handleFileModeChange} />
+              <Label className="text-[13px] text-[#6e6e73] cursor-pointer" onClick={() => handleFileModeChange(!isSingleFile)}>
+                {isSingleFile ? 'One file' : 'Two files'}
+              </Label>
+            </div>
+            {usage.currentPlan === 'free' ? (
+              <Link href="/pricing">
+                <Button size="sm" className="h-8 px-4 text-[13px] rounded-full bg-[#1d1d1f] hover:bg-[#1d1d1f]/90 text-white shadow-sm">
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                  Upgrade
+                </Button>
+              </Link>
+            ) : (
+              <span className="text-[13px] font-medium text-[#1d1d1f] px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">
+                {usage.currentPlan.charAt(0).toUpperCase() + usage.currentPlan.slice(1)}
+              </span>
+            )}
           </div>
         </div>
-      </header>
-
-      {/* Privacy Banner - Prominent */}
-      <div className="bg-emerald-600 text-white px-6 py-2.5 flex items-center justify-center gap-3 shrink-0">
-        <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <p className="text-sm font-medium text-center">
-          Your files never leave your browser. No data is uploaded to any server — 100% private and secure.
-        </p>
-        <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-      </div>
+      </nav>
 
       {/* Limit error alert */}
       {limitError && (
-        <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center gap-3">
-          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-          <p className="text-sm text-amber-800 flex-1">{limitError}</p>
-          <Link href="/pricing">
-            <Button size="sm" className="h-7 text-xs bg-amber-600 hover:bg-amber-700">
-              Upgrade Now
-            </Button>
-          </Link>
-          <button onClick={() => setLimitError(null)} className="text-amber-600 hover:text-amber-800">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+        <div className="bg-amber-50/80 backdrop-blur-sm border-b border-amber-100 px-6 py-3">
+          <div className="max-w-[1200px] mx-auto flex items-center gap-3">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+            <p className="text-[13px] text-amber-800 flex-1">{limitError}</p>
+            <Link href="/pricing">
+              <Button size="sm" className="h-7 text-[12px] rounded-full bg-amber-600 hover:bg-amber-700">
+                Upgrade Now
+              </Button>
+            </Link>
+            <button onClick={() => setLimitError(null)} className="text-amber-600 hover:text-amber-800 transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Main content - two column layout */}
-      <main className="flex-1 flex gap-0 overflow-hidden">
-        {/* Left: Upload + Preview */}
-        <div className="w-[45%] flex flex-col border-r bg-white">
-          {!hasFiles ? (
-            <div className="flex-1 flex flex-col items-center justify-center p-6 gap-4">
-              <div className="text-center max-w-sm">
-                <h2 className="text-base font-semibold text-gray-900 mb-2">What does this tool do?</h2>
-                <p className="text-sm text-gray-600 leading-relaxed mb-4">
-                  If you have data in one spreadsheet and need to find matching information from another, this tool does it for you automatically. 
-                  Just upload your files, tell us which columns to match, and we'll fill in the results — no formulas required.
-                </p>
-                <div className="text-left bg-gray-50 rounded-lg p-3 border border-gray-100">
-                  <p className="text-xs font-medium text-gray-700 mb-2">How it works:</p>
-                  <ul className="text-xs text-gray-600 space-y-1">
-                    <li className="flex items-start gap-1.5">
-                      <span className="text-emerald-500 font-medium">1.</span>
-                      <span>Upload your Excel files (or use one file with multiple sheets)</span>
-                    </li>
-                    <li className="flex items-start gap-1.5">
-                      <span className="text-emerald-500 font-medium">2.</span>
-                      <span>Select which column has the values you want to look up</span>
-                    </li>
-                    <li className="flex items-start gap-1.5">
-                      <span className="text-emerald-500 font-medium">3.</span>
-                      <span>Choose the reference sheet and the column to match against</span>
-                    </li>
-                    <li className="flex items-start gap-1.5">
-                      <span className="text-emerald-500 font-medium">4.</span>
-                      <span>Download the result with matched data added as new columns</span>
-                    </li>
-                  </ul>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col">
+        {!hasFiles ? (
+          /* Hero Section - Empty State */
+          <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
+            <div className="max-w-2xl mx-auto text-center">
+              {/* Large Hero Title */}
+              <h1 className="text-[48px] sm:text-[56px] font-semibold text-[#1d1d1f] tracking-[-0.03em] leading-[1.05] mb-4">
+                Match data between
+                <br />
+                <span className="bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
+                  spreadsheets.
+                </span>
+              </h1>
+              <p className="text-[19px] text-[#6e6e73] leading-relaxed max-w-lg mx-auto mb-10">
+                Upload your files, pick the columns to match, and get results instantly. No formulas needed.
+              </p>
+
+              {/* Upload Card */}
+              <div className="max-w-md mx-auto mb-12">
+                <FileUploadArea
+                  files={files}
+                  onFilesAdded={handleFilesAdded}
+                  onRemoveFile={removeFile}
+                  maxFiles={isSingleFile ? 1 : 2}
+                  compact
+                />
+              </div>
+
+              {/* How it works - Clean Steps */}
+              <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto">
+                <div className="text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04] flex items-center justify-center mx-auto mb-3">
+                    <Download className="w-5 h-5 text-[#1d1d1f]" />
+                  </div>
+                  <p className="text-[13px] font-medium text-[#1d1d1f]">Upload</p>
+                  <p className="text-[12px] text-[#6e6e73] mt-0.5">Drop your Excel files</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04] flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-5 h-5 text-[#1d1d1f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                    </svg>
+                  </div>
+                  <p className="text-[13px] font-medium text-[#1d1d1f]">Configure</p>
+                  <p className="text-[12px] text-[#6e6e73] mt-0.5">Select columns to match</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04] flex items-center justify-center mx-auto mb-3">
+                    <Zap className="w-5 h-5 text-[#1d1d1f]" />
+                  </div>
+                  <p className="text-[13px] font-medium text-[#1d1d1f]">Download</p>
+                  <p className="text-[12px] text-[#6e6e73] mt-0.5">Get matched results</p>
                 </div>
               </div>
-              <FileUploadArea
-                files={files}
-                onFilesAdded={handleFilesAdded}
-                onRemoveFile={removeFile}
-                maxFiles={isSingleFile ? 1 : 2}
-                compact
-              />
+
+              {/* Trust Indicators */}
+              <div className="mt-12 flex items-center justify-center gap-6">
+                <div className="flex items-center gap-1.5 text-[12px] text-[#6e6e73]">
+                  <Shield className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Files stay in your browser</span>
+                </div>
+                <div className="w-1 h-1 rounded-full bg-[#6e6e73]/30" />
+                <div className="flex items-center gap-1.5 text-[12px] text-[#6e6e73]">
+                  <Zap className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>No sign-up required</span>
+                </div>
+              </div>
             </div>
-          ) : (
-            <>
-              <div className="px-4 pt-3 pb-2 border-b shrink-0">
+          </div>
+        ) : (
+          /* Workspace - Active State */
+          <div className="flex-1 flex gap-0 overflow-hidden">
+            {/* Left: Upload + Preview */}
+            <div className="w-[45%] flex flex-col">
+              <div className="px-5 pt-4 pb-2">
                 <FileUploadArea
                   files={files}
                   onFilesAdded={handleFilesAdded}
@@ -253,37 +274,37 @@ export default function Home() {
                   inline
                 />
               </div>
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-hidden px-5 pb-5">
                 {sourceSheet && (
-                  <CompactPreview
-                    sheet={sourceSheet}
-                    title={isSingleFile ? config.sourceSheetName || 'Preview' : `${sourceFile?.name} — ${config.sourceSheetName}`}
-                    highlightCol={config.lookupValueCol}
-                    highlightLabel="Match column"
-                  />
+                  <div className="h-full rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04] overflow-hidden">
+                    <CompactPreview
+                      sheet={sourceSheet}
+                      title={isSingleFile ? config.sourceSheetName || 'Preview' : `${sourceFile?.name} — ${config.sourceSheetName}`}
+                      highlightCol={config.lookupValueCol}
+                      highlightLabel="Match column"
+                    />
+                  </div>
                 )}
               </div>
-            </>
-          )}
-        </div>
+            </div>
 
-        {/* Right: Config + Actions */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {hasFiles ? (
-            <>
-              <div className="flex-1 overflow-auto px-5 py-4">
-                <ConfigPanel
-                  files={files}
-                  isSingleFile={isSingleFile}
-                  config={config}
-                  sourceSheet={sourceSheet}
-                  targetSheet={targetSheet}
-                  onChange={updateConfig}
-                  onSheetChange={handleSheetChange}
-                />
+            {/* Right: Config + Actions */}
+            <div className="flex-1 flex flex-col overflow-hidden px-5 py-4">
+              <div className="flex-1 overflow-auto rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04]">
+                <div className="p-6">
+                  <ConfigPanel
+                    files={files}
+                    isSingleFile={isSingleFile}
+                    config={config}
+                    sourceSheet={sourceSheet}
+                    targetSheet={targetSheet}
+                    onChange={updateConfig}
+                    onSheetChange={handleSheetChange}
+                  />
+                </div>
               </div>
               {isConfigValid && (
-                <div className="border-t bg-white px-5 py-3 shrink-0">
+                <div className="mt-4 rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04] p-4">
                   <ActionButtons
                     formulas={formulas}
                     matchResults={matchResults}
@@ -304,67 +325,36 @@ export default function Home() {
                       return check;
                     }}
                     onAfterDownload={() => {
-                      // Refresh usage data after download
                       setUsage(getUsage());
                     }}
                   />
                 </div>
               )}
-            </>
-          ) : (
-            <div className="flex-1 flex items-center justify-center p-8">
-              <div className="text-center max-w-sm">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <h2 className="text-base font-semibold text-gray-900 mb-2">Ready to match data</h2>
-                <p className="text-sm text-gray-500">
-                  Upload your Excel files in the left panel to start matching and looking up data between spreadsheets.
-                </p>
-                <p className="text-xs text-gray-400 mt-3">Supports .xlsx, .xls, and .csv files</p>
-              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
 
-      {/* Trust Footer */}
-      <footer className="border-t bg-white px-6 py-3 flex items-center justify-center gap-6 shrink-0">
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          <span>Your files never leave your browser</span>
+      {/* Minimal Footer */}
+      <footer className="border-t border-black/[0.04] bg-white/60 backdrop-blur-sm">
+        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <span className="text-[12px] text-[#6e6e73]">&copy; 2024 DataMatch</span>
+            <div className="flex items-center gap-1 text-[12px] text-[#6e6e73]">
+              <Shield className="w-3 h-3 text-emerald-500" />
+              <span>All processing happens in your browser</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="text-[12px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">Privacy</Link>
+            <Link href="/terms" className="text-[12px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">Terms</Link>
+            <Link href="/cookies" className="text-[12px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">Cookies</Link>
+            <Link href="/refund-policy" className="text-[12px] text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">Refunds</Link>
+            <div className="h-3 w-px bg-black/[0.08]" />
+            <Link href="/admin" className="text-[12px] text-[#6e6e73]/60 hover:text-[#1d1d1f] transition-colors">Admin</Link>
+          </div>
         </div>
-        <div className="h-3 w-px bg-gray-200" />
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          <span>No data uploaded to any server</span>
-        </div>
-        <div className="h-3 w-px bg-gray-200" />
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          <span>100% client-side processing</span>
-        </div>
-        <div className="h-3 w-px bg-gray-200" />
-        <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
-          Admin
-        </Link>
       </footer>
-
-      {/* Legal links */}
-      <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-400">
-        <Link href="/privacy" className="hover:text-gray-600 transition-colors">Privacy Policy</Link>
-        <Link href="/terms" className="hover:text-gray-600 transition-colors">Terms of Service</Link>
-        <Link href="/cookies" className="hover:text-gray-600 transition-colors">Cookie Policy</Link>
-        <Link href="/refund-policy" className="hover:text-gray-600 transition-colors">Refund Policy</Link>
-      </div>
 
       {/* Cookie Consent Banner */}
       <CookieConsent />

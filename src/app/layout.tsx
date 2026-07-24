@@ -79,7 +79,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`antialiased`}>
+      <body className="antialiased font-sans">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
