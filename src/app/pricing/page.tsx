@@ -119,7 +119,7 @@ export default function PricingPage() {
           </p>
 
           {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-3 mt-8">
+          <div className="flex items-center justify-center gap-4 mt-8">
             <span className={`text-sm ${billingCycle === 'monthly' ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
               Monthly
             </span>
@@ -136,7 +136,7 @@ export default function PricingPage() {
             <span className={`text-sm ${billingCycle === 'yearly' ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
               Yearly
             </span>
-            <Badge variant="secondary" className="ml-2 bg-emerald-100 text-emerald-700">
+            <Badge variant="secondary" className="ml-3 bg-emerald-100 text-emerald-700">
               Save 27%
             </Badge>
           </div>
