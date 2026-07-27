@@ -7,8 +7,10 @@ import { downloadExcelWithResults } from '@/lib/excel-utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Download, Copy, Check, Eye, Code, Lock } from 'lucide-react';
-import { needsToPayForDownload, markFileAsDownloaded, payForDownload, calculateFileHash } from '@/lib/subscription';
+import { needsToPayForDownload, markFileAsDownloaded, payForDownload, calculateFileHash, isUserLoggedIn } from '@/lib/subscription';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AuthModal } from '@/components/auth-modal';
+import { type User } from '@/lib/auth';
 
 interface ActionButtonsProps {
   formulas: string[];
@@ -41,9 +43,25 @@ export function ActionButtons({
   const [showPayDialog, setShowPayDialog] = useState(false);
   const [pendingFileHash, setPendingFileHash] = useState<string | null>(null);
   const [paying, setPaying] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const matchedCount = matchResults.filter((r) => r.matched).length;
   const totalCount = matchResults.length;
+
+  // Check if user is logged in on mount
+  useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('datamatch_user');
+      if (savedUser) {
+        try {
+          setCurrentUser(JSON.parse(savedUser));
+        } catch (e) {
+          // Invalid user data, ignore
+        }
+      }
+    }
+  });
 
   const copyOne = async (text: string, idx: number) => {
     await navigator.clipboard.writeText(text);
@@ -95,6 +113,12 @@ export function ActionButtons({
       }
     }
     
+    // Check if user is logged in (required for download)
+    if (!isUserLoggedIn()) {
+      setShowAuthModal(true);
+      return;
+    }
+    
     // Calculate file hash to check if payment is needed
     const fileHash = await calculateFileHash(sourceArrayBuffer);
     
@@ -111,6 +135,23 @@ export function ActionButtons({
     // No payment needed, proceed with download
     setPendingFileHash(fileHash);
     await doDownload();
+  };
+
+  const handleAuthSuccess = (user: User) => {
+    setCurrentUser(user);
+    // After successful login, proceed with download
+    if (sourceArrayBuffer) {
+      calculateFileHash(sourceArrayBuffer).then((fileHash) => {
+        const { needsPayment } = needsToPayForDownload(fileHash);
+        if (needsPayment) {
+          setPendingFileHash(fileHash);
+          setShowPayDialog(true);
+        } else {
+          setPendingFileHash(fileHash);
+          doDownload();
+        }
+      });
+    }
   };
 
   const handlePayAndDownload = async () => {
@@ -269,6 +310,13 @@ export function ActionButtons({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Auth Modal - Required for Download */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

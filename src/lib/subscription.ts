@@ -1,5 +1,5 @@
 // Subscription and usage tracking service
-// This is a placeholder implementation - replace with actual backend API calls
+// Currently all features are free, but download requires registration
 
 export type PlanType = 'free' | 'pro' | 'business' | 'enterprise';
 
@@ -16,19 +16,19 @@ export interface PlanLimits {
 
 export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
   free: {
-    maxRows: Infinity, // Unlimited rows for free users
-    dualFileMode: false,
-    downloadsIncluded: false, // Free users pay per download
-    downloadPricePerFile: 2.00, // $2 per download
-    watermark: true,
+    maxRows: Infinity, // Unlimited rows
+    dualFileMode: true, // All features free for now
+    downloadsIncluded: true, // Downloads are free but require registration
+    downloadPricePerFile: 0, // Free for now
+    watermark: false,
     prioritySupport: false,
     teamFeatures: false,
     apiAccess: false,
   },
   pro: {
-    maxRows: 10000,
+    maxRows: Infinity,
     dualFileMode: true,
-    downloadsIncluded: true, // Downloads included in subscription
+    downloadsIncluded: true,
     downloadPricePerFile: 0,
     watermark: false,
     prioritySupport: true,
@@ -36,7 +36,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     apiAccess: false,
   },
   business: {
-    maxRows: 100000,
+    maxRows: Infinity,
     dualFileMode: true,
     downloadsIncluded: true,
     downloadPricePerFile: 0,
@@ -99,23 +99,27 @@ export function markFileAsDownloaded(fileHash: string): void {
   }
 }
 
-// Check if user needs to pay for download
+// Check if user needs to pay for download (currently free for all users)
 export function needsToPayForDownload(fileHash: string): { needsPayment: boolean; price: number } {
-  const usage = getUsage();
-  const limits = PLAN_LIMITS[usage.currentPlan];
+  // Currently all downloads are free - payment integration reserved for future
+  return { needsPayment: false, price: 0 };
   
-  // If downloads are included in subscription, no payment needed
-  if (limits.downloadsIncluded) {
-    return { needsPayment: false, price: 0 };
-  }
-  
-  // If file has already been downloaded, no payment needed
-  if (hasFileBeenDownloaded(fileHash)) {
-    return { needsPayment: false, price: 0 };
-  }
-  
-  // Free user needs to pay for this download
-  return { needsPayment: true, price: limits.downloadPricePerFile };
+  // Future implementation when payment is enabled:
+  // const usage = getUsage();
+  // const limits = PLAN_LIMITS[usage.currentPlan];
+  // 
+  // // If downloads are included in subscription, no payment needed
+  // if (limits.downloadsIncluded) {
+  //   return { needsPayment: false, price: 0 };
+  // }
+  // 
+  // // If file has already been downloaded, no payment needed
+  // if (hasFileBeenDownloaded(fileHash)) {
+  //   return { needsPayment: false, price: 0 };
+  // }
+  // 
+  // // Free user needs to pay for this download
+  // return { needsPayment: true, price: limits.downloadPricePerFile };
 }
 
 // Check if user can process based on their plan
@@ -130,14 +134,22 @@ export function canProcess(rowCount: number, isDualFile: boolean): { allowed: bo
     };
   }
   
-  if (isDualFile && !limits.dualFileMode) {
-    return {
-      allowed: false,
-      reason: 'Dual file mode is only available on Pro and Business plans.',
-    };
-  }
+  // Dual file mode is now available for all users (free for now)
+  // if (isDualFile && !limits.dualFileMode) {
+  //   return {
+  //     allowed: false,
+  //     reason: 'Dual file mode is only available on Pro and Business plans.',
+  //   };
+  // }
   
   return { allowed: true };
+}
+
+// Check if user is logged in (required for download)
+export function isUserLoggedIn(): boolean {
+  if (typeof window === 'undefined') return false;
+  const user = localStorage.getItem('datamatch_user');
+  return user !== null;
 }
 
 // TODO: Replace with actual API calls when backend is ready

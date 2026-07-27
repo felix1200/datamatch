@@ -12,8 +12,10 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Sparkles, ArrowRight, Shield, Zap, Download, Table } from 'lucide-react';
 import Link from 'next/link';
-import { canProcess, getUsage, type UsageData } from '@/lib/subscription';
+import { canProcess, getUsage, isUserLoggedIn, type UsageData } from '@/lib/subscription';
+import { logoutUser, type User } from '@/lib/auth';
 import CookieConsent from '@/components/cookie-consent';
+import { AuthModal } from '@/components/auth-modal';
 
 const DEFAULT_CONFIG: VlookupConfig = {
   sourceFileIndex: 0,
@@ -34,9 +36,22 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'download' | 'preview' | 'formula'>('download');
   const [usage, setUsage] = useState<UsageData>({ currentPlan: 'free', downloadedFiles: [] });
   const [limitError, setLimitError] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     setUsage(getUsage());
+    // Check if user is logged in
+    if (isUserLoggedIn()) {
+      const savedUser = localStorage.getItem('datamatch_user');
+      if (savedUser) {
+        try {
+          setCurrentUser(JSON.parse(savedUser));
+        } catch (e) {
+          // Invalid user data, ignore
+        }
+      }
+    }
   }, []);
 
   const handleFilesAdded = useCallback((newFiles: File[]) => {
@@ -95,6 +110,15 @@ export default function Home() {
     setConfig((prev) => ({ ...prev, ...partial }));
   }, []);
 
+  const handleLogout = useCallback(() => {
+    logoutUser();
+    setCurrentUser(null);
+  }, []);
+
+  const handleAuthSuccess = useCallback((user: User) => {
+    setCurrentUser(user);
+  }, []);
+
   const handleSheetChange = useCallback((type: 'source' | 'target', sheetName: string) => {
     setConfig((prev) => {
       if (type === 'source') {
@@ -146,17 +170,17 @@ export default function Home() {
               <Shield className="w-3.5 h-3.5 text-emerald-600" />
               <span className="text-[11px] font-medium text-emerald-700">100% Private</span>
             </div>
-            {usage.currentPlan === 'free' ? (
-              <Link href="/pricing">
-                <Button size="sm" className="h-8 px-4 text-[13px] rounded-full bg-[#1d1d1f] hover:bg-[#1d1d1f]/90 text-white shadow-sm">
-                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-                  Upgrade
+            {currentUser ? (
+              <div className="flex items-center gap-2">
+                <span className="text-[13px] text-gray-600">{currentUser.email}</span>
+                <Button size="sm" variant="outline" onClick={handleLogout} className="h-8 px-3 text-[12px] rounded-full">
+                  Sign out
                 </Button>
-              </Link>
+              </div>
             ) : (
-              <span className="text-[13px] font-medium text-[#1d1d1f] px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">
-                {usage.currentPlan.charAt(0).toUpperCase() + usage.currentPlan.slice(1)}
-              </span>
+              <Button size="sm" onClick={() => setShowAuthModal(true)} className="h-8 px-4 text-[13px] rounded-full bg-[#1d1d1f] hover:bg-[#1d1d1f]/90 text-white shadow-sm">
+                Sign in
+              </Button>
             )}
           </div>
         </div>
@@ -401,6 +425,13 @@ export default function Home() {
 
       {/* Cookie Consent Banner */}
       <CookieConsent />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }
