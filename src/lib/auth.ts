@@ -43,49 +43,67 @@ export function isLoggedIn(): boolean {
   return getCurrentUser() !== null;
 }
 
-// TODO: Replace with actual API calls when backend is ready
-
-// Placeholder: Register a new user
+// Register a new user
 export async function registerUser(email: string, password: string, name?: string): Promise<{ success: boolean; user?: User; error?: string }> {
-  // TODO: Implement actual registration API call
-  console.log('TODO: Implement user registration for:', email);
-  
-  // For now, simulate successful registration
-  const user: User = {
-    id: 'user_' + Date.now(),
-    email,
-    name,
-    createdAt: new Date().toISOString(),
-  };
-  
-  saveUser(user);
-  
-  return { success: true, user };
+  try {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, name }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: data.error || 'Registration failed' };
+    }
+
+    if (data.user) {
+      saveUser(data.user);
+    }
+
+    return { success: true, user: data.user };
+  } catch (error) {
+    console.error('Registration error:', error);
+    return { success: false, error: 'Network error. Please try again.' };
+  }
 }
 
-// Placeholder: Login user
+// Login user
 export async function loginUser(email: string, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
-  // TODO: Implement actual login API call
-  console.log('TODO: Implement user login for:', email);
-  
-  // For now, simulate successful login
-  const user: User = {
-    id: 'user_' + Date.now(),
-    email,
-    createdAt: new Date().toISOString(),
-  };
-  
-  saveUser(user);
-  
-  return { success: true, user };
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: data.error || 'Login failed' };
+    }
+
+    if (data.user) {
+      saveUser(data.user);
+    }
+
+    return { success: true, user: data.user };
+  } catch (error) {
+    console.error('Login error:', error);
+    return { success: false, error: 'Network error. Please try again.' };
+  }
 }
 
-// Placeholder: Logout user
+// Logout user
 export async function logoutUser(): Promise<void> {
-  // TODO: Implement actual logout API call
-  console.log('TODO: Implement user logout');
-  
-  clearUser();
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } catch (error) {
+    console.error('Logout error:', error);
+  } finally {
+    clearUser();
+  }
 }
 
 // Placeholder: Update user profile
