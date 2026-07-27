@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { withAdminAuth } from '@/lib/auth-middleware';
 
 // GET /api/admin/stats
-export async function GET(request: NextRequest) {
+export const GET = withAdminAuth(async (request: NextRequest) => {
   try {
-    // TODO: Add authentication check
-    
     // Get total users
     const totalUsersResult = await query('SELECT COUNT(*) as count FROM users');
     const totalUsers = parseInt(totalUsersResult.rows[0].count) || 0;
@@ -89,4 +88,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

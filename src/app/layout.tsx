@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { ToastContainer } from '@/components/toast';
 
 export const metadata: Metadata = {
   title: 'DataMatch — Match & Look Up Data Between Excel Spreadsheets | Free VLOOKUP Alternative',
@@ -82,6 +83,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {children}
+        <ToastContainer />
       </body>
     </html>
   );

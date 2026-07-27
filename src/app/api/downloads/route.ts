@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { withAuth } from '@/lib/auth-middleware';
 
 // GET /api/downloads - Check if a file has been downloaded by a user
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -70,10 +71,10 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/downloads - Record a download (after payment or for subscription users)
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest) => {
   try {
     const body = await request.json();
     const { userId, fileHash, fileName, fileSize, rowCount, paymentId } = body;
@@ -118,4 +119,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

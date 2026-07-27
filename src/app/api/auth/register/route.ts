@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import { generateToken } from '@/lib/jwt';
 
 // POST /api/auth/register - Register a new user
 export async function POST(request: NextRequest) {
@@ -28,11 +29,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
-    const passwordHash = crypto
-      .createHash('sha256')
-      .update(password)
-      .digest('hex');
+    // Hash password with bcrypt
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
 
     // Create user
     const userResult = await query(
@@ -51,7 +50,12 @@ export async function POST(request: NextRequest) {
       [user.id]
     );
 
-    // TODO: Generate JWT token for session
+    // Generate JWT token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      isAdmin: false,
+    });
 
     return NextResponse.json({
       success: true,
@@ -60,7 +64,7 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
       },
-      // TODO: Add token here
+      token,
     });
   } catch (error) {
     console.error('Error registering user:', error);

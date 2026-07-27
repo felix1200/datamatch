@@ -43,8 +43,23 @@ export function isLoggedIn(): boolean {
   return getCurrentUser() !== null;
 }
 
+// Get auth token
+export function getAuthToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+// Create authenticated fetch headers
+export function getAuthHeaders(): HeadersInit {
+  const token = getAuthToken();
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+  };
+}
+
 // Register a new user
-export async function registerUser(email: string, password: string, name?: string): Promise<{ success: boolean; user?: User; error?: string }> {
+export async function registerUser(email: string, password: string, name?: string): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
   try {
     const response = await fetch('/api/auth/register', {
       method: 'POST',
@@ -60,9 +75,12 @@ export async function registerUser(email: string, password: string, name?: strin
 
     if (data.user) {
       saveUser(data.user);
+      if (data.token) {
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+      }
     }
 
-    return { success: true, user: data.user };
+    return { success: true, user: data.user, token: data.token };
   } catch (error) {
     console.error('Registration error:', error);
     return { success: false, error: 'Network error. Please try again.' };
@@ -70,7 +88,7 @@ export async function registerUser(email: string, password: string, name?: strin
 }
 
 // Login user
-export async function loginUser(email: string, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
+export async function loginUser(email: string, password: string): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
   try {
     const response = await fetch('/api/auth/login', {
       method: 'POST',
@@ -86,9 +104,12 @@ export async function loginUser(email: string, password: string): Promise<{ succ
 
     if (data.user) {
       saveUser(data.user);
+      if (data.token) {
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+      }
     }
 
-    return { success: true, user: data.user };
+    return { success: true, user: data.user, token: data.token };
   } catch (error) {
     console.error('Login error:', error);
     return { success: false, error: 'Network error. Please try again.' };

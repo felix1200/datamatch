@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import { generateToken } from '@/lib/jwt';
 
 // POST /api/auth/login - Login user
 export async function POST(request: NextRequest) {
@@ -30,13 +31,10 @@ export async function POST(request: NextRequest) {
 
     const user = userResult.rows[0];
 
-    // Verify password
-    const passwordHash = crypto
-      .createHash('sha256')
-      .update(password)
-      .digest('hex');
+    // Verify password with bcrypt
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
 
-    if (user.password_hash !== passwordHash) {
+    if (!isValidPassword) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
@@ -58,7 +56,12 @@ export async function POST(request: NextRequest) {
       [user.id]
     );
 
-    // TODO: Generate JWT token for session
+    // Generate JWT token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      isAdmin: user.email === 'admin@datamatch.com', // Simple admin check
+    });
 
     return NextResponse.json({
       success: true,
@@ -72,7 +75,7 @@ export async function POST(request: NextRequest) {
         status: subscriptionResult.rows[0].status,
         billingCycle: subscriptionResult.rows[0].billing_cycle,
       } : null,
-      // TODO: Add token here
+      token,
     });
   } catch (error) {
     console.error('Error logging in:', error);

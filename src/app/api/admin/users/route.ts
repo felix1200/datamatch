@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { withAdminAuth } from '@/lib/auth-middleware';
 
 // GET /api/admin/users
-export async function GET(request: NextRequest) {
+export const GET = withAdminAuth(async (request: NextRequest) => {
   try {
-    // TODO: Add authentication check
-    
     // Fetch users with their subscription and usage info
     const result = await query(`
       SELECT 
@@ -50,13 +49,11 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/admin/users - Update user
-export async function POST(request: NextRequest) {
+export const POST = withAdminAuth(async (request: NextRequest) => {
   try {
-    // TODO: Add authentication check
-    
     const body = await request.json();
     const { id, plan, status } = body;
 
@@ -118,4 +115,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

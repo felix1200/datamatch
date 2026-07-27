@@ -1,4 +1,5 @@
 import type { SheetData } from './excel-utils';
+import { getColumnLetter } from './excel-utils';
 
 export interface VlookupParams {
   lookupColumn: string;
@@ -27,10 +28,10 @@ export function generateVlookupFormulas(
   const rangeLookup = matchMode === 'fuzzy' ? 'TRUE' : 'FALSE';
   const startRow = 2;
   const endRow = lookupSheet.rows.length + 1;
-  const startColLetter = getColLetter(rangeStartIndex);
-  const endColLetter = getColLetter(rangeEndIndex);
+  const startColLetter = getColumnLetter(rangeStartIndex);
+  const endColLetter = getColumnLetter(rangeEndIndex);
   const tableArray = `${startColLetter}${startRow}:${endColLetter}${endRow}`;
-  const lookupCellRef = `${getColLetter(lookupColIndex)}${rowIndex + 1}`;
+  const lookupCellRef = `${getColumnLetter(lookupColIndex)}${rowIndex + 1}`;
 
   return returnColumns.map((returnCol) => {
     const returnColIndex = lookupHeaders.indexOf(returnCol);
@@ -95,16 +96,6 @@ export function executeVlookup(
   }
 
   return results;
-}
-
-function getColLetter(index: number): string {
-  let letter = '';
-  let n = index;
-  while (n >= 0) {
-    letter = String.fromCharCode((n % 26) + 65) + letter;
-    n = Math.floor(n / 26) - 1;
-  }
-  return letter;
 }
 
 // Aliases for convenience

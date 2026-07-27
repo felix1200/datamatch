@@ -17,11 +17,24 @@ export interface ExcelFile {
 
 export function parseExcelFile(file: File): Promise<ExcelFile> {
   return new Promise((resolve, reject) => {
+    // File size validation (max 50MB)
+    const MAX_FILE_SIZE = 50 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      reject(new Error('File too large. Maximum size is 50MB.'));
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const data = e.target?.result;
         const workbook = XLSX.read(data, { type: 'array' });
+
+        // Validate sheet count
+        if (workbook.SheetNames.length === 0) {
+          reject(new Error('File contains no sheets.'));
+          return;
+        }
         const sheets: SheetData[] = workbook.SheetNames.map((name) => {
           const worksheet = workbook.Sheets[name];
           // Use header:1 to get raw 2D array — preserves ALL columns including empty ones
@@ -33,6 +46,18 @@ export function parseExcelFile(file: File): Promise<ExcelFile> {
 
           if (rawRows.length === 0) {
             return { name, headers: [], rows: [] };
+          }
+
+          // Column count validation (max 100 columns)
+          const MAX_COLUMNS = 100;
+          if (rawRows[0].length > MAX_COLUMNS) {
+            throw new Error(`Sheet "${name}" has ${rawRows[0].length} columns. Maximum is ${MAX_COLUMNS}.`);
+          }
+
+          // Row count validation (max 100,000 rows)
+          const MAX_ROWS = 100000;
+          if (rawRows.length > MAX_ROWS) {
+            throw new Error(`Sheet "${name}" has ${rawRows.length.toLocaleString()} rows. Maximum is ${MAX_ROWS.toLocaleString()}.`);
           }
 
           // First row = headers; ensure all are strings and handle duplicates

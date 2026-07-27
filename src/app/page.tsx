@@ -10,7 +10,7 @@ import { ActionButtons } from '@/components/action-buttons';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Sparkles, ArrowRight, Shield, Zap, Download, Table } from 'lucide-react';
+import { AlertTriangle, Sparkles, ArrowRight, Shield, Zap, Download, Table, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { canProcess, getUsage, isUserLoggedIn, type UsageData } from '@/lib/subscription';
 import { logoutUser, type User } from '@/lib/auth';
@@ -38,6 +38,7 @@ export default function Home() {
   const [limitError, setLimitError] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
 
   useEffect(() => {
     setUsage(getUsage());
@@ -55,7 +56,18 @@ export default function Home() {
   }, []);
 
   const handleFilesAdded = useCallback((newFiles: File[]) => {
-    Promise.all(newFiles.map(parseExcelFile)).then((parsed) => {
+    setUploadProgress({ current: 0, total: newFiles.length });
+    
+    let processed = 0;
+    const promises = newFiles.map((file) => 
+      parseExcelFile(file).then((result) => {
+        processed++;
+        setUploadProgress({ current: processed, total: newFiles.length });
+        return result;
+      })
+    );
+    
+    Promise.all(promises).then((parsed) => {
       setFiles((prev) => {
         const combined = [...prev, ...parsed].slice(0, 2);
         const first = combined[0];
@@ -75,6 +87,10 @@ export default function Home() {
         }
         return combined;
       });
+      setUploadProgress(null);
+    }).catch((error) => {
+      console.error('Error parsing files:', error);
+      setUploadProgress(null);
     });
   }, []);
 
@@ -148,13 +164,13 @@ export default function Home() {
     <div className="min-h-screen bg-[#f5f5f7] flex flex-col">
       {/* Frosted Glass Navigation */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-black/[0.04]">
-        <div className="max-w-[1200px] mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-8">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-4 sm:gap-8">
             <Link href="/" className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-sm shadow-emerald-500/20">
                 <Table className="w-4 h-4 text-white" strokeWidth={2.5} />
               </div>
-              <span className="text-[17px] font-semibold text-[#1d1d1f] tracking-[-0.02em]">DataMatch</span>
+              <span className="text-[15px] sm:text-[17px] font-semibold text-[#1d1d1f] tracking-[-0.02em]">DataMatch</span>
             </Link>
             <div className="hidden sm:flex items-center gap-1">
               <Link href="/pricing" className="px-3 py-1.5 text-[13px] text-[#6e6e73] hover:text-[#1d1d1f] rounded-full hover:bg-black/[0.04] transition-all">
@@ -165,20 +181,23 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">
               <Shield className="w-3.5 h-3.5 text-emerald-600" />
               <span className="text-[11px] font-medium text-emerald-700">100% Private</span>
             </div>
             {currentUser ? (
               <div className="flex items-center gap-2">
-                <span className="text-[13px] text-gray-600">{currentUser.email}</span>
-                <Button size="sm" variant="outline" onClick={handleLogout} className="h-8 px-3 text-[12px] rounded-full">
+                <Link href="/profile" className="hidden sm:flex items-center gap-1.5 text-[13px] text-gray-600 hover:text-[#1d1d1f] transition-colors">
+                  <UserIcon className="w-4 h-4" />
+                  <span className="truncate max-w-[120px]">{currentUser.email}</span>
+                </Link>
+                <Button size="sm" variant="outline" onClick={handleLogout} className="h-7 sm:h-8 px-2 sm:px-3 text-[11px] sm:text-[12px] rounded-full">
                   Sign out
                 </Button>
               </div>
             ) : (
-              <Button size="sm" onClick={() => setShowAuthModal(true)} className="h-8 px-4 text-[13px] rounded-full bg-[#1d1d1f] hover:bg-[#1d1d1f]/90 text-white shadow-sm">
+              <Button size="sm" onClick={() => setShowAuthModal(true)} className="h-7 sm:h-8 px-3 sm:px-4 text-[11px] sm:text-[13px] rounded-full bg-[#1d1d1f] hover:bg-[#1d1d1f]/90 text-white shadow-sm">
                 Sign in
               </Button>
             )}
@@ -210,19 +229,37 @@ export default function Home() {
       <main className="flex-1 flex flex-col">
         {!hasFiles ? (
           /* Hero Section - Empty State */
-          <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
             <div className="max-w-2xl mx-auto text-center">
               {/* Large Hero Title */}
-              <h1 className="text-[48px] sm:text-[56px] font-semibold text-[#1d1d1f] tracking-[-0.03em] leading-[1.05] mb-4">
+              <h1 className="text-[36px] sm:text-[48px] lg:text-[56px] font-semibold text-[#1d1d1f] tracking-[-0.03em] leading-[1.05] mb-4">
                 Match data between
                 <br />
                 <span className="bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
                   spreadsheets.
                 </span>
               </h1>
-              <p className="text-[19px] text-[#6e6e73] leading-relaxed max-w-lg mx-auto mb-10">
+              <p className="text-[16px] sm:text-[19px] text-[#6e6e73] leading-relaxed max-w-lg mx-auto mb-8 sm:mb-10">
                 Upload your files, pick the columns to match, and get results instantly. No formulas needed.
               </p>
+
+              {/* Upload Progress */}
+              {uploadProgress && (
+                <div className="mb-6 max-w-md mx-auto">
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-black/[0.04]">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[13px] font-medium text-[#1d1d1f]">Processing files...</span>
+                      <span className="text-[13px] text-[#6e6e73]">{uploadProgress.current}/{uploadProgress.total}</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-emerald-500 transition-all duration-300"
+                        style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* File Mode Toggle - Prominent */}
               <div className="mb-8">
@@ -316,9 +353,9 @@ export default function Home() {
           </div>
         ) : (
           /* Workspace - Active State */
-          <div className="flex-1 flex gap-0 overflow-hidden">
+          <div className="flex-1 flex flex-col lg:flex-row gap-0 overflow-hidden">
             {/* Left: Upload + Preview */}
-            <div className="w-[45%] flex flex-col">
+            <div className="w-full lg:w-[45%] flex flex-col max-h-[50vh] lg:max-h-none">
               <div className="px-5 pt-4 pb-2">
                 <FileUploadArea
                   files={files}
@@ -357,7 +394,7 @@ export default function Home() {
             {/* Right: Config + Actions */}
             <div className="flex-1 flex flex-col overflow-hidden px-5 py-4">
               <div className="flex-1 overflow-auto rounded-2xl bg-white shadow-sm shadow-black/[0.04] border border-black/[0.04]">
-                <div className="p-6">
+                <div className="p-4 lg:p-6">
                   <ConfigPanel
                     files={files}
                     isSingleFile={isSingleFile}
