@@ -201,26 +201,41 @@ export default function Home() {
               </p>
 
               {/* File Mode Toggle - Prominent */}
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <span className="text-[14px] font-medium text-[#1d1d1f]">Mode:</span>
-                <div className="flex items-center bg-gray-100 rounded-full p-1 shadow-sm">
+              <div className="mb-8">
+                <div className="inline-flex items-center bg-white rounded-2xl p-1.5 shadow-lg shadow-black/[0.08] border border-black/[0.06]">
                   <button
                     onClick={() => handleFileModeChange(true)}
-                    className={`px-4 py-1.5 text-[13px] font-medium rounded-full transition-all ${
-                      isSingleFile ? 'bg-white text-[#1d1d1f] shadow-md' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                    className={`flex items-center gap-2 px-5 py-2.5 text-[14px] font-semibold rounded-xl transition-all ${
+                      isSingleFile
+                        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30'
+                        : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-gray-50'
                     }`}
                   >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                     One file
                   </button>
                   <button
                     onClick={() => handleFileModeChange(false)}
-                    className={`px-4 py-1.5 text-[13px] font-medium rounded-full transition-all ${
-                      !isSingleFile ? 'bg-white text-[#1d1d1f] shadow-md' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                    className={`flex items-center gap-2 px-5 py-2.5 text-[14px] font-semibold rounded-xl transition-all ${
+                      !isSingleFile
+                        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30'
+                        : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-gray-50'
                     }`}
                   >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <svg className="w-4 h-4 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                     Two files
                   </button>
                 </div>
+                <p className="text-[13px] text-[#6e6e73] mt-3 ml-2">
+                  {isSingleFile ? 'Match data within the same file' : 'Match data between two different files'}
+                </p>
               </div>
 
               {/* Upload Card */}
