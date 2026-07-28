@@ -42,30 +42,47 @@ interface Stats {
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [token, setToken] = useState<string | null>(null);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Simple password protection (in production, use proper auth)
-  const handleLogin = () => {
-    // TODO: Replace with proper authentication
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD || password === 'admin123') {
-      setIsAuthenticated(true);
-      loadData();
-    } else {
-      alert('Invalid password');
+  const handleLogin = async () => {
+    try {
+      const res = await fetch('/api/auth/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        setToken(data.token);
+        setIsAuthenticated(true);
+        loadData(data.token);
+      } else {
+        alert(data.error || 'Invalid password');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Failed to login');
     }
   };
 
-  const loadData = async () => {
+  const loadData = async (authToken: string) => {
     setLoading(true);
     try {
+      const headers = {
+        'Authorization': `Bearer ${authToken}`,
+      };
+
       // Fetch real data from API
       const [subsRes, statsRes, usersRes] = await Promise.all([
-        fetch('/api/admin/subscriptions'),
-        fetch('/api/admin/stats'),
-        fetch('/api/admin/users')
+        fetch('/api/admin/subscriptions', { headers }),
+        fetch('/api/admin/stats', { headers }),
+        fetch('/api/admin/users', { headers })
       ]);
 
       const subsData = await subsRes.json();
