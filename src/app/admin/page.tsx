@@ -9,6 +9,16 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+interface User {
+  id: string;
+  email: string;
+  name: string | null;
+  plan: 'free' | 'pro' | 'business';
+  status: 'active' | 'cancelled' | 'expired';
+  createdAt: string;
+  lastLoginAt: string | null;
+}
+
 interface Subscription {
   id: string;
   email: string;
@@ -33,6 +43,7 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,54 +61,29 @@ export default function AdminDashboard() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API calls
-      // const [subsRes, statsRes] = await Promise.all([
-      //   fetch('/api/admin/subscriptions'),
-      //   fetch('/api/admin/stats')
-      // ]);
-      // const subsData = await subsRes.json();
-      // const statsData = await statsRes.json();
-
-      // Mock data for now
-      setSubscriptions([
-        {
-          id: '1',
-          email: 'user1@example.com',
-          plan: 'pro',
-          status: 'active',
-          createdAt: '2024-01-15',
-          expiresAt: '2025-01-15',
-          monthlyRevenue: 9,
-        },
-        {
-          id: '2',
-          email: 'user2@example.com',
-          plan: 'business',
-          status: 'active',
-          createdAt: '2024-02-01',
-          expiresAt: '2025-02-01',
-          monthlyRevenue: 29,
-        },
-        {
-          id: '3',
-          email: 'user3@example.com',
-          plan: 'free',
-          status: 'active',
-          createdAt: '2024-03-10',
-          expiresAt: null,
-          monthlyRevenue: 0,
-        },
+      // Fetch real data from API
+      const [subsRes, statsRes, usersRes] = await Promise.all([
+        fetch('/api/admin/subscriptions'),
+        fetch('/api/admin/stats'),
+        fetch('/api/admin/users')
       ]);
 
-      setStats({
-        totalUsers: 150,
-        activeSubscriptions: 45,
-        monthlyRevenue: 580,
-        yearlyRevenue: 6960,
-        freeUsers: 105,
-        proUsers: 30,
-        businessUsers: 15,
-      });
+      const subsData = await subsRes.json();
+      const statsData = await statsRes.json();
+      const usersData = await usersRes.json();
+
+      if (subsRes.ok) {
+        setSubscriptions(subsData.data || []);
+      }
+
+      if (statsRes.ok) {
+        setStats(statsData.data || null);
+      }
+
+      // Store users data for the users tab
+      if (usersRes.ok) {
+        setUsers(usersData.data || []);
+      }
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
@@ -309,9 +295,54 @@ export default function AdminDashboard() {
                 <CardDescription>View and manage user accounts</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-500 text-center py-8">
-                  TODO: Implement user management features
-                </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Plan</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Last Login</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                          No users found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      users.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.email}</TableCell>
+                          <TableCell>{user.name || '-'}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.plan === 'free' ? 'secondary' : 'default'}>
+                              {user.plan}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                user.status === 'active'
+                                  ? 'default'
+                                  : user.status === 'cancelled'
+                                  ? 'destructive'
+                                  : 'secondary'
+                              }
+                            >
+                              {user.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                          <TableCell>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : '-'}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </TabsContent>
