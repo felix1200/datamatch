@@ -99,7 +99,16 @@ export default function AdminDashboard() {
 
       // Store users data for the users tab
       if (usersRes.ok) {
-        setUsers(usersData.data || []);
+        const mappedUsers = (usersData.users || []).map((u: any) => ({
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          plan: u.plan || 'free',
+          status: u.subscriptionStatus || 'active',
+          createdAt: u.createdAt,
+          lastLoginAt: u.lastActive || u.createdAt,
+        }));
+        setUsers(mappedUsers);
       }
     } catch (error) {
       console.error('Failed to load data:', error);
