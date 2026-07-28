@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: '/',
+    canonical: 'https://dtpair.com/',
   },
 };
 
@@ -58,7 +58,7 @@ export default function RootLayout({
     '@type': 'WebApplication',
     name: 'DataMatch',
     description: 'Free online tool to match and look up data between Excel spreadsheets. Find values, fill columns, and merge files without formulas.',
-    url: '/',
+    url: 'https://dtpair.com/',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Any',
     offers: {

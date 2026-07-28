@@ -7,5 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/_next/', '/static/'],
     },
+    sitemap: 'https://dtpair.com/sitemap.xml',
   };
 }
