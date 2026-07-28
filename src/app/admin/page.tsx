@@ -94,7 +94,7 @@ export default function AdminDashboard() {
       }
 
       if (statsRes.ok) {
-        setStats(statsData.data || null);
+        setStats(statsData.stats || null);
       }
 
       // Store users data for the users tab
