@@ -184,10 +184,11 @@ export default function AdminDashboard() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Active Subscriptions</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Paid Subscribers</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats?.activeSubscriptions || 0}</div>
+              <p className="text-xs text-gray-500 mt-1">Pro + Business</p>
             </CardContent>
           </Card>
 

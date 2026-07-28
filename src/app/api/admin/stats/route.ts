@@ -9,10 +9,13 @@ export const GET = withAdminAuth(async (request: NextRequest) => {
     const totalUsersResult = await query('SELECT COUNT(*) as count FROM users');
     const totalUsers = parseInt(totalUsersResult.rows[0].count) || 0;
 
-    // Get active subscriptions count
-    const activeSubsResult = await query(
-      "SELECT COUNT(*) as count FROM subscriptions WHERE status = 'active'"
-    );
+    // Get active subscriptions count (excluding free plan)
+    const activeSubsResult = await query(`
+      SELECT COUNT(*) as count 
+      FROM subscriptions s
+      JOIN plans p ON s.plan_id = p.id
+      WHERE s.status = 'active' AND p.name != 'free'
+    `);
     const activeSubscriptions = parseInt(activeSubsResult.rows[0].count) || 0;
 
     // Get user counts by plan
