@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+Sitemap: https://dtpair.com/sitemap.xml
+
+# Content signals for AI usage preferences
+# Reference: https://contentsignals.org/ (draft-romm-aipref-contentsignals)
+# ai-train=no    : Do not use this content to train AI models
+# search=yes     : Allow use in search engine results and summaries
+# ai-input=no    : Do not use this content as direct input/output for AI systems
+Content-Signal: ai-train=no, search=yes, ai-input=no

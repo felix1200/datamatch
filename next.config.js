@@ -12,6 +12,29 @@ const nextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/',
+        headers: [
+          // RFC 8288 Link headers for agent discovery
+          {
+            key: 'Link',
+            value: '</api>; rel="api-catalog", </.well-known/agent-skills>; rel="service-doc", </sitemap.xml>; rel="sitemap"',
+          },
+        ],
+      },
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Link',
+            value: '</.well-known/agent-skills>; rel="service-doc", </api>; rel="api-catalog"',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
