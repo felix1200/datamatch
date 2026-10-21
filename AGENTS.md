@@ -2,7 +2,9 @@
 
 ## 项目概述
 
-VLOOKUP 公式助手 — 纯前端工具，帮助用户可视化生成 Excel VLOOKUP 公式。用户上传 Excel 文件，通过下拉框配置参数，批量生成公式并支持三种输出方式。
+datamatch 数据匹配工具
+
+VLOOKUP公式助手 / 数据匹配工具：多Excel上传、可视化参数绑定、批量生成公式，纯前端 Next.js + React 实现。
 
 ## 技术栈
 

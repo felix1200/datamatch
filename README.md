@@ -1,6 +1,6 @@
-# projects
+# datamatch 数据匹配工具
 
-这是一个基于 [Next.js 16](https://nextjs.org) + [shadcn/ui](https://ui.shadcn.com) 的全栈应用项目，由扣子编程 CLI 创建。
+VLOOKUP公式助手 / 数据匹配工具：多Excel上传、可视化参数绑定、批量生成公式，纯前端 Next.js + React 实现。
 
 ## 快速开始
 
